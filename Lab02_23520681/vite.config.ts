@@ -1,6 +1,10 @@
 import { defineConfig } from 'vite';
+import path from 'path';
 
 export default defineConfig({
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js', '.jsx']
+  },
   esbuild: {
     jsxFactory: 'createElement',
     jsxFragment: 'createFragment',
@@ -10,7 +14,12 @@ export default defineConfig({
     target: 'es2020',
     outDir: 'dist',
     sourcemap: true,
-    minify: 'esbuild'
+    minify: 'esbuild',
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html')
+      }
+    }
   },
   server: {
     port: 3000,
