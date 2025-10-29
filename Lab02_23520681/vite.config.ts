@@ -1,6 +1,11 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  esbuild: {
+    jsxFactory: 'createElement',
+    jsxFragment: 'createFragment',
+    jsxInject: `import { createElement, createFragment } from '/src/jsx-runtime'`
+  },
   build: {
     target: 'es2020',
     outDir: 'dist',
@@ -9,6 +14,6 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    open: false,
+    open: false
   }
 });
