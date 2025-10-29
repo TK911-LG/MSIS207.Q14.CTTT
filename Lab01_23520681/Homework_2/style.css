@@ -1,0 +1,58 @@
+body {
+  text-align: center;
+  background-color: #283149;
+}
+
+h1 {
+  font-size: 5rem;
+  color: #DBEDF3;
+  font-family: "Arial", cursive;
+  text-shadow: 3px 0 #DA0463;
+  display: inline-flex;
+  align-items: center;
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
+  margin: 0 15px;
+}
+
+.set {
+  margin: 10% auto;
+}
+
+.drum {
+  outline: none;
+  border: 10px solid #404B69;
+  font-size: 5rem;
+  font-family: 'Arial', cursive;
+  line-height: 2;
+  font-weight: 900;
+  color: #DA0463;
+  text-shadow: 3px 0 #DBEDF3;
+  border-radius: 15px;
+  display: inline-block;
+  width: 150px;
+  height: 150px;
+  text-align: center;
+  margin: 10px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.07s ease;
+}
+
+/* Class added via JavaScript for visual feedback */
+.pressed {
+  box-shadow: 0 3px 4px 0 #DBEDF3;
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+.w { background-image: url(https://i.imgur.com/nJ6aT5V.png); }
+.a { background-image: url(https://i.imgur.com/xT5IZp4.png); }
+.s { background-image: url(https://i.imgur.com/1G60S1i.png); }
+.d { background-image: url(https://i.imgur.com/4zYTh60.png); }
+.j { background-image: url(https://i.imgur.com/8V5w2S9.png); }
+.k { background-image: url(https://i.imgur.com/w4p40jA.png); }
+.l { background-image: url(https://i.imgur.com/nN1k5A9.png); }

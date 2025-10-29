@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindWell - Your Mental Health Journey</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+
+<nav>
+  <div class="logo">MindWell</div>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#breathing">Breathing</a></li>
+    <li><a href="#mood">Mood Tracker</a></li>
+    <li><a href="#resources">Resources</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero" id="home">
+  <div class="floating-shapes">
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+  </div>
+  <div class="hero-content">
+    <h1>Your Mental Health Matters</h1>
+    <p>Take the first step towards a healthier, happier you</p>
+    <button class="cta-button" onclick="scrollToSection('services')">Start Your Journey</button>
+  </div>
+</section>
+
+<section class="cards-section" id="services">
+  <h2 class="section-title">How We Can Help</h2>
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-icon">🧘</div>
+      <h3>Meditation & Mindfulness</h3>
+      <p>Learn techniques to calm your mind, reduce stress, and find inner peace through guided meditation sessions.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">💬</div>
+      <h3>Talk Therapy</h3>
+      <p>Connect with licensed therapists who understand and provide professional support in a safe space.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📊</div>
+      <h3>Progress Tracking</h3>
+      <p>Monitor your mental health journey with personalized insights and celebrate your progress.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌙</div>
+      <h3>Sleep Support</h3>
+      <p>Improve your sleep quality with relaxation techniques and sleep hygiene guidance.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">❤️</div>
+      <h3>Emotional Wellness</h3>
+      <p>Build emotional resilience and learn healthy coping strategies for life's challenges.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🤝</div>
+      <h3>Community Support</h3>
+      <p>Join a supportive community where you can share experiences and feel understood.</p>
+    </div>
+  </div>
+</section>
+
+<section class="breathing-section" id="breathing">
+  <h2>Breathing Exercise</h2>
+  <div class="breathing-circle" id="breathingCircle">
+    <div class="breathing-text" id="breathingText">Start</div>
+  </div>
+  <p class="breathing-instruction" id="breathingInstruction">Click the circle to begin a calming breathing exercise</p>
+</section>
+
+<section class="mood-section" id="mood">
+  <div class="mood-tracker">
+    <h2 class="section-title">How Are You Feeling Today?</h2>
+    <p>Track your mood to better understand your emotional patterns</p>
+    <div class="mood-emojis">
+      <span class="mood-emoji" data-mood="very-sad" title="Very Sad">😢</span>
+      <span class="mood-emoji" data-mood="sad" title="Sad">😟</span>
+      <span class="mood-emoji" data-mood="neutral" title="Neutral">😐</span>
+      <span class="mood-emoji" data-mood="happy" title="Happy">😊</span>
+      <span class="mood-emoji" data-mood="very-happy" title="Very Happy">😄</span>
+    </div>
+  </div>
+</section>
+
+<section class="resources-section" id="resources">
+  <h2 class="section-title">Mental Health Resources</h2>
+  <div class="resources-grid">
+    <div class="resource-card">
+      <h4>📚 Articles & Guides</h4>
+      <p>Expert advice on mental health topics</p>
+      <a href="#" class="resource-link">Explore →</a>
+    </div>
+    <div class="resource-card">
+      <h4>🎧 Podcasts</h4>
+      <p>Listen to mental health discussions</p>
+      <a href="#" class="resource-link">Listen →</a>
+    </div>
+    <div class="resource-card">
+      <h4>📱 Apps</h4>
+      <p>Recommended mental wellness apps</p>
+      <a href="#" class="resource-link">Download →</a>
+    </div>
+    <div class="resource-card">
+      <h4>🆘 Crisis Support</h4>
+      <p>24/7 emergency mental health hotlines</p>
+      <a href="#" class="resource-link">Get Help →</a>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section" id="contact">
+  <h2 class="section-title">Get In Touch</h2>
+  <p>We're here to support you on your mental health journey</p>
+  <form class="contact-form" id="contactForm">
+    <div class="form-group">
+      <input type="text" placeholder="Your Name" required>
+    </div>
+    <div class="form-group">
+      <input type="email" placeholder="Your Email" required>
+    </div>
+    <div class="form-group">
+      <textarea placeholder="How can we help you?" rows="5" required></textarea>
+    </div>
+    <button type="submit" class="submit-btn">Send Message</button>
+  </form>
+</section>
+
+<footer>
+  <p>&copy; 2025 MindWell. Your mental health is our priority.</p>
+  <p>If you're in crisis, please call emergency services or a mental health hotline immediately.</p>
+</footer>
+
+<div class="notification" id="notification">
+  <p id="notificationText"></p>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
