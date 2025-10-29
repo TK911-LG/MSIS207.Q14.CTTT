@@ -1,3 +1,13 @@
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+    interface ElementChildrenAttribute {
+      children: {};
+    }
+  }
+}
 export interface VNode {
   type: string | ComponentFunction | typeof Fragment;
   props: Record<string, any>;
