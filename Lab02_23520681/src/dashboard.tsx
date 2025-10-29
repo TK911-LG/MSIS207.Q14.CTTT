@@ -1,8 +1,8 @@
 /** @jsx createElement */
 import { createElement, useState } from './jsx-runtime';
 import { DataService } from './data-service';
-import { Card } from './components';
-import { Chart } from './chart';
+import { Card } from './components.tsx';
+import { Chart } from './chart.tsx';
 
 const dataService = new DataService();
 let updateInterval: any = null;
