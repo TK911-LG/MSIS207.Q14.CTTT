@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement, mount, setRootRender, resetStateIndex } from './jsx-runtime';
+import { mount, setRootRender, resetStateIndex } from './jsx-runtime';
 import { Dashboard } from './dashboard.tsx';
 
 const rootElement = document.getElementById('root');
