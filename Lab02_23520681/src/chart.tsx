@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement, ComponentProps } from './jsx-runtime';
+import { ComponentProps } from './jsx-runtime';
 import { DataPoint } from './data-service';
 
 interface ChartProps extends ComponentProps {
