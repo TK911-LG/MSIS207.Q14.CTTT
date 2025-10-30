@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement, ComponentProps } from './jsx-runtime';
+import { ComponentProps } from './jsx-runtime';
 
 interface CardProps extends ComponentProps {
   title?: string;
