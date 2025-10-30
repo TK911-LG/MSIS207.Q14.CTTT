@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement, ComponentProps, useState } from './jsx-runtime';
+import { ComponentProps, useState } from './jsx-runtime';
 
 interface Todo {
   id: number;
