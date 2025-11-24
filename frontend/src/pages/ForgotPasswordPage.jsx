@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Heart, Mail, ArrowRight, Loader2, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Leaf, Envelope, ArrowRight, Spinner, ArrowLeft, CheckCircle } from 'phosphor-react';
 import { authAPI } from '../services/api';
 
 // --- STYLES (Consistent with Login Page) ---
@@ -173,7 +173,7 @@ const ForgotPasswordPage = () => {
       <div className="w-full max-w-md mx-auto pt-16 px-6 relative z-10 flex justify-center">
         <Link to="/" className="inline-flex items-center gap-3 bg-white px-6 py-3 rounded-full border border-stone-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
           <div className="w-10 h-10 rounded-full bg-[#E7F3F0] flex items-center justify-center text-[#5E8B7E]">
-            <Heart size={24} strokeWidth={3} />
+            <Leaf size={24} weight="fill" />
           </div>
           <span className="font-bold text-stone-800 text-2xl tracking-tight">Heal</span>
         </Link>
@@ -187,7 +187,7 @@ const ForgotPasswordPage = () => {
             // SUCCESS STATE
             <div className="text-center space-y-6 animate-zoom-in">
               <div className="w-20 h-20 bg-[#E7F3F0] rounded-full flex items-center justify-center text-[#5E8B7E] mx-auto">
-                <CheckCircle2 size={40} strokeWidth={2.5} />
+                <CheckCircle size={40} weight="fill" />
               </div>
               
               <div>
@@ -214,7 +214,7 @@ const ForgotPasswordPage = () => {
                   className="w-full bg-[#5E8B7E] text-white h-12 rounded-xl font-bold text-base hover:bg-[#4A7A6D] transition-all hover:shadow-md disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {status === 'loading' ? (
-                    <Loader2 size={20} className="animate-spin" />
+                    <Spinner size={20} className="animate-spin" />
                   ) : (
                     'Resend Email'
                   )}
@@ -252,7 +252,7 @@ const ForgotPasswordPage = () => {
                   label="Email Address" 
                   type="email" 
                   placeholder="alex@example.com" 
-                  icon={Mail}
+                  icon={Envelope}
                   name="email"
                   value={email}
                   onChange={(e) => {
@@ -270,7 +270,7 @@ const ForgotPasswordPage = () => {
                   className="w-full bg-[#1C1917] text-white h-14 rounded-xl font-bold text-lg hover:bg-stone-800 transition-all hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 group"
                 >
                   {status === 'loading' ? (
-                    <Loader2 size={24} className="animate-spin" />
+                    <Spinner size={24} className="animate-spin" />
                   ) : (
                     <>
                       Send Reset Link

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  ArrowRight, Heart, Brain, Activity, Zap, Sparkles
-} from 'lucide-react';
+  ArrowRight, Leaf, Brain, Activity, Lightning, Sparkle
+} from 'phosphor-react';
 
 // --- HOOKS ---
 const useScrollPosition = () => {
@@ -240,7 +240,7 @@ const Navbar = ({ onLogin, onSignup }) => {
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div className="w-8 h-8 rounded-lg bg-[#E7F3F0] flex items-center justify-center text-[#5E8B7E] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
-            <Heart size={18} strokeWidth={2.5} />
+            <Leaf size={18} weight="fill" />
           </div>
           <span className="font-bold text-stone-800 text-lg tracking-tight transition-colors group-hover:text-[#5E8B7E]">Heal</span>
         </div>
@@ -279,7 +279,7 @@ const BentoItem = ({ title, desc, icon: Icon, children, className, delay }) => (
   <FadeIn delay={delay} className={`bento-card rounded-[32px] p-8 relative overflow-hidden group ${className}`}>
     <div className="relative z-10 h-full flex flex-col">
       <div className="w-12 h-12 rounded-2xl bg-white border border-stone-100 flex items-center justify-center mb-6 text-stone-700 shadow-sm group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 group-hover:bg-[#E7F3F0] group-hover:text-[#5E8B7E]">
-        <Icon size={24} strokeWidth={1.5} />
+        <Icon size={24} weight="regular" />
       </div>
       <h3 className="text-xl font-bold text-stone-800 mb-2 group-hover:text-[#5E8B7E] transition-colors duration-300">{title}</h3>
       <p className="text-stone-500 text-sm leading-relaxed mb-8 max-w-[90%]">{desc}</p>
@@ -327,7 +327,7 @@ const JournalVisual = () => (
     <div className="h-1.5 w-5/6 bg-stone-100 rounded mb-1.5 group-hover:bg-stone-200 transition-colors duration-300" />
     <div className="h-1.5 w-4/6 bg-stone-100 rounded group-hover:bg-stone-200 transition-colors duration-300" />
     <div className="absolute top-4 right-4 text-[#5E8B7E] group-hover:scale-125 group-hover:rotate-12 transition-all duration-300">
-      <Sparkles size={16} />
+      <Sparkle size={16} />
     </div>
   </div>
 );
@@ -458,7 +458,7 @@ const LandingContent = ({ onSignup }) => {
             className="bg-[#FAFAF9]"
             title="Deep Focus Mode"
             desc="Integrated Pomodoro Timer and ambient sounds (Rain, White Noise) to help you enter the flow state."
-            icon={Zap}
+            icon={Lightning}
             delay={200}
           >
             <FocusVisual />
@@ -528,7 +528,7 @@ const LandingContent = ({ onSignup }) => {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-6">
           <div className="flex items-center gap-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
             <div className="w-6 h-6 rounded bg-stone-100 flex items-center justify-center text-[#5E8B7E]">
-              <Heart size={14} />
+              <Leaf size={14} weight="fill" />
             </div>
             <span className="font-bold text-stone-800">Heal</span>
           </div>

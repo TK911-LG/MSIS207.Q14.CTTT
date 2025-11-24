@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle2, XCircle, X, Info, AlertCircle } from 'lucide-react';
+import { CheckCircle, XCircle, X, Info, Warning } from 'phosphor-react';
 
 const Toast = ({ toast, onClose }) => {
   const [isExiting, setIsExiting] = useState(false);
@@ -21,10 +21,10 @@ const Toast = ({ toast, onClose }) => {
   }, [toast, onClose]);
 
   const icons = {
-    success: CheckCircle2,
+    success: CheckCircle,
     error: XCircle,
     info: Info,
-    warning: AlertCircle,
+    warning: Warning,
   };
 
   const colors = {
@@ -78,7 +78,7 @@ const Toast = ({ toast, onClose }) => {
       }}
     >
       <div className={`${colorScheme.iconBg} rounded-lg p-2 flex-shrink-0`}>
-        <Icon className={colorScheme.icon} size={18} strokeWidth={2.5} />
+        <Icon className={colorScheme.icon} size={18} weight="fill" />
       </div>
       <div className="flex-1 min-w-0 pt-0.5">
         {toast.title && (
@@ -95,7 +95,7 @@ const Toast = ({ toast, onClose }) => {
         "
         aria-label="Close"
       >
-        <X size={14} strokeWidth={2.5} />
+        <X size={14} weight="bold" />
       </button>
     </div>
   );

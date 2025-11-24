@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Heart, Mail, Lock, User, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Leaf, Envelope, Lock, User, ArrowRight, Eye, EyeSlash, Spinner } from 'phosphor-react';
 
 // --- STYLES ---
 const AuthStyles = () => (
@@ -58,7 +58,7 @@ const InputField = ({ label, type = "text", placeholder, icon: Icon, name, value
             className="absolute right-4 text-stone-400 hover:text-stone-600 transition-colors"
             disabled={disabled}
           >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
           </button>
         )}
       </div>
@@ -144,7 +144,7 @@ const SignupPage = () => {
       <div className="w-full max-w-md mx-auto pt-16 px-6 relative z-10 flex justify-center">
         <Link to="/" className="inline-flex items-center gap-3 bg-white px-6 py-3 rounded-full border border-stone-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
           <div className="w-10 h-10 rounded-full bg-[#E7F3F0] flex items-center justify-center text-[#5E8B7E]">
-            <Heart size={24} strokeWidth={3} />
+            <Leaf size={24} weight="fill" />
           </div>
           <span className="font-bold text-stone-800 text-2xl tracking-tight">Heal</span>
         </Link>
@@ -197,7 +197,7 @@ const SignupPage = () => {
               label="Email" 
               type="email" 
               placeholder="alex@example.com" 
-              icon={Mail}
+              icon={Envelope}
               name="email"
               value={formData.email}
               onChange={handleChange}
@@ -240,7 +240,7 @@ const SignupPage = () => {
               className="w-full bg-[#1C1917] text-white h-14 rounded-xl font-bold text-lg hover:bg-stone-800 transition-all hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 group"
             >
               {loading ? (
-                <Loader2 size={24} className="animate-spin" />
+                <Spinner size={24} className="animate-spin" />
               ) : (
                 <>
                   Create Account

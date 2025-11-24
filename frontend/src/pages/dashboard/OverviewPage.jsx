@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '../../context/ToastContext';
 import { 
-  Timer, Flame, Smile, Wind, BookOpen, Droplets, Plus, Check, 
-  Activity, Moon, Search, Bell, Target
-} from 'lucide-react';
+  Timer, Flame, Smiley, Wind, BookOpen, Drop, Plus, Check, 
+  Activity, Moon, MagnifyingGlass, Bell, Target, TrendUp, Sparkle
+} from 'phosphor-react';
+import { moodAPI, habitAPI, journalAPI } from '../../services/api';
+import { 
+  getPersonalizedGreeting, 
+  getEncouragingMessage, 
+  getTimeBasedBackground,
+  getPersonalizedInsight,
+  humanTouchContent 
+} from '../../utils/personalization';
 
 const MindfulnessWidget = ({ minutes = 35 }) => (
   <div className="bg-white p-6 rounded-[32px] card-shadow relative overflow-hidden h-full group cursor-default">
@@ -33,47 +43,150 @@ const MindfulnessWidget = ({ minutes = 35 }) => (
   </div>
 );
 
-const MoodWave = ({ history = [4, 3, 5, 4, 2, 4, 5] }) => (
-  <div className="bg-white p-8 rounded-[32px] card-shadow relative overflow-hidden col-span-1 md:col-span-2 flex flex-col justify-between">
-    <div className="flex justify-between items-center mb-2 relative z-10">
-      <div>
-        <h3 className="text-stone-800 font-bold text-lg">Emotional Flow</h3>
-        <p className="text-stone-400 text-xs font-medium mt-1">Last 7 days trend</p>
+const MoodWave = ({ moodData, loading }) => {
+  const getLast7DaysData = () => {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const weekData = [];
+    const today = new Date();
+    
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      date.setHours(0, 0, 0, 0);
+      
+      const dayName = days[date.getDay()];
+      const dateStr = date.toISOString().split('T')[0];
+      
+      // Find mood entry for this date
+      const moodEntry = moodData?.find(m => {
+        const moodDate = new Date(m.date);
+        moodDate.setHours(0, 0, 0, 0);
+        return moodDate.getTime() === date.getTime();
+      });
+      
+      if (moodEntry) {
+        // Convert score (1-10) to level (1-5)
+        const level = Math.ceil(moodEntry.score / 2);
+        weekData.push({
+          dayName,
+          level,
+          score: moodEntry.score,
+          hasData: true,
+        });
+      } else {
+        weekData.push({
+          dayName,
+          level: 0,
+          score: 0,
+          hasData: false,
+        });
+      }
+    }
+    
+    return weekData;
+  };
+
+  const getColorForLevel = (level) => {
+    if (level === 0) return '#E5E7EB';
+    const colors = ['#FCA5A5', '#FDBA74', '#F5F5F4', '#E7F3F0', '#5E8B7E'];
+    return colors[Math.min(level - 1, 4)] || '#E5E7EB';
+  };
+
+  const getHeight = (level) => {
+    if (level === 0) return 10;
+    return (level / 5) * 100;
+  };
+
+  const weekData = getLast7DaysData();
+  const hasData = moodData && moodData.length > 0;
+
+  if (loading) {
+    return (
+      <div className="bg-white p-8 rounded-[32px] card-shadow relative overflow-hidden col-span-1 md:col-span-2 flex items-center justify-center">
+        <div className="animate-pulse text-stone-400">Loading mood data...</div>
       </div>
-    </div>
-    <div className="h-40 w-full flex items-end justify-between gap-3 relative z-10 px-2">
-      {history.map((level, i) => {
-        const height = level * 20;
-        const colors = ['#FCA5A5', '#FDBA74', '#F5F5F4', '#E7F3F0', '#5E8B7E'];
-        return (
-          <div
-            key={i}
-            className="flex flex-col items-center gap-3 w-full group cursor-pointer"
-            title={`Level ${level}/5`}
-          >
-            <div
-              className="w-full bg-stone-50 rounded-2xl relative overflow-hidden transition-all duration-500 group-hover:bg-stone-100"
-              style={{ height: `${height}%` }}
-            >
+    );
+  }
+
+  // Calculate average mood for personalized insight
+  const avgScore = hasData && weekData.filter(d => d.hasData).length > 0
+    ? weekData.filter(d => d.hasData).reduce((sum, d) => sum + d.score, 0) / weekData.filter(d => d.hasData).length
+    : 0;
+  const insightType = avgScore >= 7 ? 'improving' : avgScore >= 5 ? 'stable' : 'declining';
+
+  return (
+    <div className="bg-white p-8 rounded-[32px] card-shadow relative overflow-hidden col-span-1 md:col-span-2 flex flex-col justify-between">
+      <div className="flex justify-between items-start mb-4 relative z-10">
+        <div className="flex-1">
+          <h3 className="text-stone-800 font-bold text-lg">Emotional Flow</h3>
+          <p className="text-stone-400 text-xs font-medium mt-1 flex items-center gap-1">
+            <TrendUp size={14} />
+            <span>Last 7 days trend</span>
+          </p>
+          {hasData && avgScore > 0 && (
+            <p className="text-xs text-stone-500 mt-2 italic leading-relaxed">
+              {getPersonalizedInsight({ avgScore, type: insightType }, 'mood')}
+            </p>
+          )}
+        </div>
+      </div>
+      {!hasData ? (
+        <div className="h-40 w-full flex flex-col items-center justify-center text-center px-4">
+          <Sparkle size={32} className="text-stone-300 mb-2" weight="duotone" />
+          <p className="text-stone-400 text-sm mb-1">
+            {humanTouchContent.emptyStates.mood.message}
+          </p>
+          <p className="text-xs text-stone-400 italic">
+            {getActionRecommendation('noMood')}
+          </p>
+        </div>
+      ) : (
+        <div className="h-40 w-full flex items-end justify-between gap-2 relative z-10">
+          {weekData.map((day, i) => {
+            const height = getHeight(day.level);
+            const color = getColorForLevel(day.level);
+            const isToday = i === weekData.length - 1;
+            return (
               <div
-                className="absolute bottom-0 w-full transition-all duration-500 group-hover:opacity-90 opacity-80"
-                style={{
-                  height: '100%',
-                  backgroundColor: colors[level - 1],
-                }}
-              />
-            </div>
-          </div>
-        );
-      })}
+                key={i}
+                className="flex flex-col items-center gap-2 w-full group cursor-pointer"
+                title={day.hasData ? `${day.dayName}: ${day.score}/10` : `${day.dayName}: No entry`}
+              >
+                <div
+                  className="w-full rounded-t-2xl relative overflow-hidden transition-all duration-500 group-hover:brightness-110"
+                  style={{
+                    height: `${Math.max(height, 15)}%`,
+                    backgroundColor: color,
+                    minHeight: '15px',
+                    border: isToday ? '2px solid #5E8B7E' : 'none',
+                    boxShadow: isToday ? '0 0 0 2px rgba(94, 139, 126, 0.2)' : 'none',
+                  }}
+                >
+                  {day.hasData && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent" />
+                  )}
+                </div>
+                <div className="text-[10px] font-bold text-stone-400 uppercase">
+                  {day.dayName.slice(0, 1)}
+                </div>
+                {day.hasData && (
+                  <div className="text-[9px] text-stone-500 font-medium">
+                    {day.score}/10
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 const HabitListWidget = ({ habits, onToggle, onAdd }) => {
   const habitIcons = {
     wind: Wind,
-    drop: Droplets,
+    drop: Drop,
     'book-open': BookOpen,
     moon: Moon,
     target: Target,
@@ -140,117 +253,352 @@ const HabitListWidget = ({ habits, onToggle, onAdd }) => {
   );
 };
 
-const ActivityFeed = () => (
-  <div className="bg-white p-6 rounded-[32px] card-shadow mt-6">
-    <h3 className="font-bold text-stone-800 mb-4">Recent Activity</h3>
-    <div className="relative pl-4 space-y-6 border-l border-stone-100">
-      {[
-        { text: 'Logged mood: Great 😄', time: '2h ago', color: 'bg-[#D97757]' },
-        { text: 'Completed: Meditation', time: '5h ago', color: 'bg-[#5E8B7E]' },
-      ].map((item, i) => (
-        <div key={i} className="relative">
-          <div
-            className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white ring-1 ring-white ${item.color}`}
-          />
-          <p className="text-sm font-medium text-stone-700">{item.text}</p>
-          <p className="text-xs text-stone-400 mt-0.5">{item.time}</p>
-        </div>
-      ))}
-    </div>
-  </div>
-);
+const ActivityFeed = ({ activities, loading }) => {
+  const formatTime = (dateString) => {
+    if (!dateString) return 'Just now';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now - date;
+    const diffInMins = Math.floor(diffInMs / (1000 * 60));
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-const StreakWidget = () => (
-  <div className="bg-[#1C1917] p-6 rounded-[32px] card-shadow text-white flex items-center justify-between relative overflow-hidden group mt-6">
-    <div className="relative z-10">
-      <p className="text-stone-400 text-xs font-bold uppercase tracking-widest mb-1">
-        Streak
-      </p>
-      <h3 className="text-4xl font-bold text-white">
-        12 <span className="text-lg font-medium text-stone-500">days</span>
-      </h3>
+    if (diffInMins < 1) return 'Just now';
+    if (diffInMins < 60) return `${diffInMins}m ago`;
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+    
+    // Show actual date for older items
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-white p-6 rounded-[32px] card-shadow mt-6">
+        <h3 className="font-bold text-stone-800 mb-4">Recent Activity</h3>
+        <div className="animate-pulse text-stone-400 text-sm">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!activities || activities.length === 0) {
+    return (
+      <div className="bg-white p-6 rounded-[32px] card-shadow mt-6">
+        <h3 className="font-bold text-stone-800 mb-4">Recent Activity</h3>
+        <div className="text-center py-6">
+          <Sparkle size={24} className="text-stone-300 mx-auto mb-2" weight="duotone" />
+          <p className="text-stone-400 text-sm mb-1">Your activity feed is quiet</p>
+          <p className="text-xs text-stone-400 italic">Start logging your mood or completing habits to see your journey unfold! ✨</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white p-6 rounded-[32px] card-shadow mt-6">
+      <h3 className="font-bold text-stone-800 mb-4">Recent Activity</h3>
+      <div className="relative pl-4 space-y-6 border-l border-stone-100">
+        {activities.map((item, i) => (
+          <div key={i} className="relative">
+            <div
+              className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white ring-1 ring-white ${item.color}`}
+            />
+            <p className="text-sm font-medium text-stone-700">{item.text}</p>
+            <p className="text-xs text-stone-400 mt-0.5" title={new Date(item.date).toLocaleString()}>
+              {formatTime(item.date)}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
-    <div className="relative z-10 w-14 h-14 rounded-full bg-orange-500/10 flex items-center justify-center text-[#D97757] border border-orange-500/20">
-      <Flame size={28} fill="currentColor" className="animate-pulse" />
+  );
+};
+
+const StreakWidget = ({ habits }) => {
+  // Calculate overall streak from all habits
+  const calculateOverallStreak = () => {
+    if (!habits || habits.length === 0) return 0;
+    
+    // Get all unique completion dates from all habits
+    const allDates = new Set();
+    habits.forEach(habit => {
+      if (habit._original?.completedDates) {
+        habit._original.completedDates.forEach(date => allDates.add(date));
+      }
+    });
+    
+    if (allDates.size === 0) return 0;
+    
+    // Sort dates and calculate consecutive days
+    const sortedDates = Array.from(allDates)
+      .map(d => new Date(d))
+      .sort((a, b) => a - b);
+    
+    let streak = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Count consecutive days from today backwards
+    for (let i = sortedDates.length - 1; i >= 0; i--) {
+      const date = new Date(sortedDates[i]);
+      date.setHours(0, 0, 0, 0);
+      const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === streak) {
+        streak++;
+      } else if (diffDays > streak) {
+        break;
+      }
+    }
+    
+    return streak;
+  };
+
+  const streak = calculateOverallStreak();
+  const dayText = streak === 1 ? 'day' : 'days';
+
+  return (
+    <div className="bg-white p-6 rounded-[32px] card-shadow flex items-center justify-between relative overflow-hidden group mt-6 border border-stone-200">
+      <div className="relative z-10">
+        <p className="text-stone-400 text-xs font-bold uppercase tracking-widest mb-1">
+          Streak
+        </p>
+        <h3 className="text-4xl font-bold text-stone-500">
+          {streak} <span className="text-lg font-medium text-stone-500">{dayText}</span>
+        </h3>
+      </div>
+      <div className="relative z-10 w-14 h-14 rounded-full bg-orange-500/10 flex items-center justify-center text-[#D97757] border border-orange-500/20">
+        <Flame size={28} fill="currentColor" className="animate-pulse" />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const OverviewPage = () => {
   const { user } = useAuth();
-  const [habits, setHabits] = useState([
-    {
-      id: 1,
-      title: 'Morning Meditation',
-      streak: 12,
-      completed: true,
-      time: '07:00 AM',
-      iconName: 'wind',
-    },
-    {
-      id: 2,
-      title: 'Drink 2L Water',
-      streak: 5,
-      completed: false,
-      time: 'All Day',
-      iconName: 'drop',
-    },
-    {
-      id: 3,
-      title: 'Read 10 Pages',
-      streak: 24,
-      completed: false,
-      time: '09:00 PM',
-      iconName: 'book-open',
-    },
-    {
-      id: 4,
-      title: 'No Screen Time',
-      streak: 3,
-      completed: true,
-      time: '10:00 PM',
-      iconName: 'moon',
-    },
-  ]);
+  const navigate = useNavigate();
+  const [moodData, setMoodData] = useState([]);
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [habits, setHabits] = useState([]);
+  const [habitsLoading, setHabitsLoading] = useState(true);
+  const toast = useToast();
 
-  const toggleHabit = (id) => {
-    setHabits(habits.map((h) => (h.id === id ? { ...h, completed: !h.completed } : h)));
+  const fetchHabits = async () => {
+    try {
+      setHabitsLoading(true);
+      const response = await habitAPI.list();
+      if (response.items) {
+        // Transform API response to match component expectations
+        const transformedHabits = response.items.map((habit) => {
+          const today = new Date().toDateString();
+          // Check if habit is completed today
+          const isCompleted = habit.completedDates?.includes(today) || false;
+
+          // Calculate streak from completedDates
+          const sortedDates = (habit.completedDates || []).sort();
+          let streak = 0;
+          const todayDate = new Date();
+          todayDate.setHours(0, 0, 0, 0);
+          
+          for (let i = sortedDates.length - 1; i >= 0; i--) {
+            const date = new Date(sortedDates[i]);
+            date.setHours(0, 0, 0, 0);
+            const diffDays = Math.floor((todayDate - date) / (1000 * 60 * 60 * 24));
+            if (diffDays === streak) {
+              streak++;
+            } else {
+              break;
+            }
+          }
+
+          // Use iconName from habit if available
+          let iconName = habit.iconName || 'target';
+          if (!habit.iconName && habit.category) {
+            const categoryToIcon = {
+              'meditation': 'wind',
+              'health': 'drop',
+              'reading': 'book-open',
+              'sleep': 'moon',
+              'exercise': 'dumbbell',
+              'wellness': 'heart',
+              'productivity': 'zap',
+              'fitness': 'dumbbell',
+              'creativity': 'camera',
+              'leisure': 'gamepad2',
+              'general': 'target',
+            };
+            iconName = categoryToIcon[habit.category?.toLowerCase()] || 'target';
+          }
+
+          return {
+            id: habit._id,
+            title: habit.name || habit.title,
+            streak,
+            completed: isCompleted,
+            time: 'Anytime',
+            iconName,
+            _original: habit,
+          };
+        });
+        setHabits(transformedHabits);
+      }
+    } catch (error) {
+      console.error('Error fetching habits:', error);
+    } finally {
+      setHabitsLoading(false);
+    }
+  };
+
+  const toggleHabit = async (id) => {
+    try {
+      await habitAPI.toggle(id, new Date().toISOString());
+      await fetchHabits();
+      toast.success('Habit updated', { duration: 2000 });
+    } catch (error) {
+      console.error('Error toggling habit:', error);
+      toast.error('Failed to update habit');
+    }
   };
 
   const addHabit = () => {
-    const title = prompt('Enter new habit:');
-    if (title) {
-      setHabits([
-        ...habits,
-        {
-          id: Date.now(),
-          title,
-          streak: 0,
-          completed: false,
-          time: 'Anytime',
-          iconName: 'target',
-        },
+    navigate('/dashboard/habits');
+  };
+
+  useEffect(() => {
+    fetchOverviewData();
+    fetchHabits();
+  }, []);
+
+  const fetchOverviewData = async () => {
+    try {
+      setLoading(true);
+      
+      // Get last 7 days
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      // Fetch mood data for last 7 days
+      const [moodResponse, journalResponse, habitResponse] = await Promise.all([
+        moodAPI.list({
+          from: sevenDaysAgo.toISOString(),
+          to: new Date().toISOString(),
+          all: true,
+        }),
+        journalAPI.list({ limit: 5 }),
+        habitAPI.list(),
       ]);
+
+      // Process mood data
+      if (moodResponse.items) {
+        setMoodData(moodResponse.items);
+      }
+
+      // Create activity feed from recent entries
+      const activityList = [];
+      
+      // Add recent mood entries
+      if (moodResponse.items && moodResponse.items.length > 0) {
+        moodResponse.items
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .slice(0, 3)
+          .forEach(mood => {
+            const moodLabels = {
+              1: 'Very Low',
+              2: 'Low',
+              3: 'Neutral',
+              4: 'Good',
+              5: 'Great',
+            };
+            activityList.push({
+              text: `Logged mood: ${moodLabels[Math.ceil(mood.score / 2)] || 'Neutral'}`,
+              date: mood.date,
+              color: 'bg-[#D97757]',
+            });
+          });
+      }
+
+      // Add recent journal entries
+      if (journalResponse.items && journalResponse.items.length > 0) {
+        journalResponse.items
+          .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date))
+          .slice(0, 2)
+          .forEach(journal => {
+            activityList.push({
+              text: `Journal entry: ${journal.title || 'Untitled'}`,
+              date: journal.createdAt || journal.date,
+              color: 'bg-[#78716C]',
+            });
+          });
+      }
+
+      // Add recent habit completions
+      if (habitResponse.items && habitResponse.items.length > 0) {
+        habitResponse.items.forEach(habit => {
+          if (habit.completedDates && habit.completedDates.length > 0) {
+            // Get most recent completion date
+            const sortedDates = habit.completedDates
+              .map(d => new Date(d))
+              .sort((a, b) => b - a);
+            if (sortedDates.length > 0) {
+              activityList.push({
+                text: `Completed: ${habit.name || habit.title}`,
+                date: sortedDates[0].toISOString(),
+                color: 'bg-[#5E8B7E]',
+              });
+            }
+          }
+        });
+      }
+
+      // Sort by date and take most recent 5
+      activityList.sort((a, b) => new Date(b.date) - new Date(a.date));
+      setActivities(activityList.slice(0, 5));
+    } catch (error) {
+      console.error('Error fetching overview data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const quickActions = [
-    { label: 'Log Mood', icon: Smile, color: 'text-[#D97757] bg-[#FEEBE5]' },
-    { label: 'Breathe', icon: Wind, color: 'text-[#5E8B7E] bg-[#E7F3F0]' },
-    { label: 'Journal', icon: BookOpen, color: 'text-[#78716C] bg-[#F5F5F4]' },
-    { label: 'Hydrate', icon: Droplets, color: 'text-[#7DD3FC] bg-[#E0F2FE]' },
+    { label: 'Log Mood', icon: Smiley, color: 'text-[#D97757] bg-[#FEEBE5]', path: '/dashboard/mood' },
+    { label: 'Habits', icon: Target, color: 'text-[#5E8B7E] bg-[#E7F3F0]', path: '/dashboard/habits' },
+    { label: 'Journal', icon: BookOpen, color: 'text-[#78716C] bg-[#F5F5F4]', path: '/dashboard/journal' },
+    { label: 'Sleep', icon: Moon, color: 'text-[#7DD3FC] bg-[#E0F2FE]', path: '/dashboard/sleep' },
   ];
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 fade-in">
       <header className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-stone-800">Overview</h1>
-          <p className="text-stone-500">Welcome back, {user?.displayName || user?.username}</p>
+          {(() => {
+            const { greeting, emoji } = getPersonalizedGreeting(user?.displayName || user?.username);
+            return (
+              <>
+                <h1 className="text-3xl font-bold text-stone-800 flex items-center gap-2">
+                  {greeting} {emoji}
+                </h1>
+                <p className="text-stone-500 mt-1">
+                  {getEncouragingMessage({
+                    habitsCompleted: habits.filter(h => h.completed).length,
+                    streak: habits.length > 0 ? Math.max(...habits.map(h => h.streak || 0)) : 0,
+                    moodCount: moodData?.length || 0,
+                    journalCount: 0
+                  }).text}
+                </p>
+              </>
+            );
+          })()}
         </div>
         <div className="flex items-center gap-4">
           <div className="relative">
-            <Search
+            <MagnifyingGlass
               className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
               size={18}
             />
@@ -270,7 +618,7 @@ const OverviewPage = () => {
         <div className="md:col-span-1">
           <MindfulnessWidget />
         </div>
-        <MoodWave />
+        <MoodWave moodData={moodData} loading={loading} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -279,6 +627,7 @@ const OverviewPage = () => {
             {quickActions.map((action, i) => (
               <button
                 key={i}
+                onClick={() => action.path && navigate(action.path)}
                 className="heal-card p-4 flex flex-col items-center gap-3 hover:scale-105 transition-transform"
               >
                 <div
@@ -295,8 +644,8 @@ const OverviewPage = () => {
         </div>
 
         <div className="space-y-6">
-          <StreakWidget />
-          <ActivityFeed />
+          <StreakWidget habits={habits} />
+          <ActivityFeed activities={activities} loading={loading} />
         </div>
       </div>
     </div>

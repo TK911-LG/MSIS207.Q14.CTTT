@@ -12,6 +12,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.0",
     "lucide-react": "^0.263.1",
+    "phosphor-react": "^1.4.1",
     "axios": "^1.6.0"
   },
   "devDependencies": {

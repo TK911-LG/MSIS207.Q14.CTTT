@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Moon, Calendar as CalendarIcon, RefreshCcw, Check, Target } from 'lucide-react';
+import { Activity, Moon, Calendar, ArrowCounterClockwise, Check, Target } from 'phosphor-react';
 import { moodAPI } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 
@@ -102,6 +102,8 @@ const EmotionWheelUI = ({ onSelect, selectedZone, selectedCluster }) => {
         height={size}
         viewBox={`0 0 ${size} ${size}`}
         className="w-full h-full drop-shadow-2xl"
+        style={{ display: 'block', margin: '0 auto' }}
+        preserveAspectRatio="xMidYMid meet"
       >
         {Object.entries(MOOD_DATA).map(([key, zone]) => {
           const isDimmed = selectedZone && selectedZone !== key;
@@ -112,7 +114,8 @@ const EmotionWheelUI = ({ onSelect, selectedZone, selectedCluster }) => {
               onClick={() => onSelect('zone', key)}
               className={`transition-all duration-300 cursor-pointer ${
                 isDimmed ? 'opacity-20 grayscale' : ''
-              } ${isActive ? 'scale-105' : ''}`}
+              }`}
+              style={{ transformOrigin: `${center}px ${center}px` }}
             >
               <path
                 d={describeArc(center, center, r0 + 4, r1, zone.startAngle + 2, zone.endAngle - 2)}
@@ -124,7 +127,7 @@ const EmotionWheelUI = ({ onSelect, selectedZone, selectedCluster }) => {
                   x={polarToCartesian(center, center, (r0 + r1) / 2, (zone.startAngle + zone.endAngle) / 2).x}
                   y={polarToCartesian(center, center, (r0 + r1) / 2, (zone.startAngle + zone.endAngle) / 2).y}
                   textAnchor="middle"
-                  alignmentBaseline="middle"
+                  dominantBaseline="middle"
                   className="pointer-events-none"
                   style={{
                     fontSize: '11px',
@@ -159,9 +162,13 @@ const EmotionWheelUI = ({ onSelect, selectedZone, selectedCluster }) => {
                   else onSelect('zone', zoneKey);
                 }}
                 className={`transition-all duration-300 ${
-                  !isZoneActive ? 'opacity-20 scale-90 pointer-events-none' : 'opacity-100'
-                } ${isClusterActive ? 'brightness-90 scale-[1.03]' : ''} cursor-pointer`}
-                style={{ transitionDelay: isZoneActive ? '100ms' : '0ms' }}
+                  !isZoneActive ? 'opacity-20 pointer-events-none' : 'opacity-100'
+                } ${isClusterActive ? 'brightness-90' : ''} cursor-pointer`}
+                style={{ 
+                  transitionDelay: isZoneActive ? '100ms' : '0ms',
+                  transformOrigin: `${center}px ${center}px`,
+                  transform: !isZoneActive ? 'scale(0.9)' : isClusterActive ? 'scale(1.02)' : 'scale(1)'
+                }}
               >
                 <path
                   d={describeArc(center, center, r1 + 4, r2, start + 1, end - 1)}
@@ -172,7 +179,7 @@ const EmotionWheelUI = ({ onSelect, selectedZone, selectedCluster }) => {
                   x={polarToCartesian(center, center, (r1 + r2) / 2, (start + end) / 2).x}
                   y={polarToCartesian(center, center, (r1 + r2) / 2, (start + end) / 2).y}
                   textAnchor="middle"
-                  alignmentBaseline="middle"
+                  dominantBaseline="middle"
                   className="pointer-events-none"
                   style={{ fill: '#1c1917', fontSize: '10px', fontWeight: 600 }}
                 >
@@ -184,8 +191,14 @@ const EmotionWheelUI = ({ onSelect, selectedZone, selectedCluster }) => {
         })}
 
         <circle cx={center} cy={center} r={r0 - 5} fill="white" className="drop-shadow-sm" />
-        <foreignObject x={center - 40} y={center - 30} width="80" height="60">
-          <div className="w-full h-full flex flex-col items-center justify-center text-center pointer-events-none">
+        <foreignObject 
+          x={center - 50} 
+          y={center - 35} 
+          width="100" 
+          height="70"
+          style={{ overflow: 'visible' }}
+        >
+          <div className="w-full h-full flex flex-col items-center justify-center text-center pointer-events-none" style={{ display: 'flex' }}>
             {selectedZone ? (
               <>
                 <span className="text-[10px] text-stone-400 uppercase tracking-wide">You feel</span>
@@ -317,7 +330,7 @@ const SmartCheckIn = ({ onSave }) => {
             onClick={handleReset}
             className="p-2 rounded-full bg-stone-100 text-stone-500 hover:bg-stone-200 transition-colors"
           >
-            <RefreshCcw size={16} />
+            <ArrowCounterClockwise size={16} />
           </button>
         )}
       </div>
@@ -521,7 +534,7 @@ const MoodCalendar = ({ currentMonth, setCurrentMonth, refreshTrigger }) => {
             className="p-2 bg-stone-50 hover:bg-stone-100 rounded-full transition-colors"
             aria-label="Previous month"
           >
-            <CalendarIcon size={16} className="text-stone-600" />
+            <Calendar size={16} className="text-stone-600" />
           </button>
           <button
             onClick={handleNextMonth}
@@ -529,7 +542,7 @@ const MoodCalendar = ({ currentMonth, setCurrentMonth, refreshTrigger }) => {
             aria-label="Next month"
             disabled={currentMonth >= new Date()}
           >
-            <CalendarIcon size={16} className="text-stone-600 rotate-180" />
+            <Calendar size={16} className="text-stone-600 rotate-180" />
           </button>
         </div>
       </div>
@@ -552,7 +565,7 @@ const MoodCalendar = ({ currentMonth, setCurrentMonth, refreshTrigger }) => {
       ) : days.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
           <div className="w-16 h-16 rounded-full bg-stone-50 mb-4 flex items-center justify-center">
-            <CalendarIcon size={24} className="text-stone-300" />
+            <Calendar size={24} className="text-stone-300" />
           </div>
           <p className="text-stone-400 text-sm font-medium">No mood data yet</p>
           <p className="text-stone-300 text-xs mt-1">Start tracking your mood to see patterns</p>

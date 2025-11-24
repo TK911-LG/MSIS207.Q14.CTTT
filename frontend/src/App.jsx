@@ -9,8 +9,10 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import Dashboard from './pages/Dashboard';
 import OverviewPage from './pages/dashboard/OverviewPage';
 import MoodPage from './pages/dashboard/MoodPage';
+import SleepPage from './pages/dashboard/SleepPage';
 import HabitsPage from './pages/dashboard/HabitsPage';
 import JournalPage from './pages/dashboard/JournalPage';
+import InsightsPage from './pages/dashboard/InsightsPage';
 import SettingsPage from './pages/dashboard/SettingsPage';
 
 // Protected Route Component
@@ -32,7 +34,12 @@ function App() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <Router>
+        <Router
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -48,8 +55,10 @@ function App() {
             >
               <Route index element={<OverviewPage />} />
               <Route path="mood" element={<MoodPage />} />
+              <Route path="sleep" element={<SleepPage />} />
               <Route path="habits" element={<HabitsPage />} />
               <Route path="journal" element={<JournalPage />} />
+              <Route path="insights" element={<InsightsPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

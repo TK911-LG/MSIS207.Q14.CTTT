@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { 
-  Heart, X, Home, Smile, Target, BookOpen, Settings, 
-  LogOut, Search, Bell, Menu
-} from 'lucide-react';
+  Leaf, X, House, Smiley, Moon, Target, BookOpen, ChartBar, Gear, 
+  SignOut, MagnifyingGlass, Bell, List, Phone
+} from 'phosphor-react';
+import CrisisHelp from '../CrisisHelp';
 
 const DashboardLayout = ({ children }) => {
   const { user, signout } = useAuth();
@@ -18,12 +19,16 @@ const DashboardLayout = ({ children }) => {
   };
 
   const navItems = [
-    { id: 'overview', path: '/dashboard', icon: Home, label: 'Overview' },
-    { id: 'mood', path: '/dashboard/mood', icon: Smile, label: 'Mood' },
+    { id: 'overview', path: '/dashboard', icon: House, label: 'Overview' },
+    { id: 'mood', path: '/dashboard/mood', icon: Smiley, label: 'Mood' },
     { id: 'habits', path: '/dashboard/habits', icon: Target, label: 'Habits' },
     { id: 'journal', path: '/dashboard/journal', icon: BookOpen, label: 'Journal' },
-    { id: 'settings', path: '/dashboard/settings', icon: Settings, label: 'Settings' },
+    { id: 'insights', path: '/dashboard/insights', icon: ChartBar, label: 'Insights' },
+    { id: 'sleep', path: '/dashboard/sleep', icon: Moon, label: 'Sleep' },
+    { id: 'settings', path: '/dashboard/settings', icon: Gear, label: 'Settings' },
   ];
+
+  const [crisisOpen, setCrisisOpen] = useState(false);
 
   const currentPath = location.pathname;
   const activeNav = navItems.find(item => item.path === currentPath)?.id || 'overview';
@@ -42,7 +47,7 @@ const DashboardLayout = ({ children }) => {
             : 'text-stone-500 hover:bg-stone-100'
         }`}
       >
-        <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+        <item.icon size={20} weight={isActive ? 'bold' : 'regular'} />
         {item.label}
       </button>
     );
@@ -65,7 +70,7 @@ const DashboardLayout = ({ children }) => {
 
         <div className="flex items-center gap-3 px-2 mb-12 mt-2 lg:mt-0">
           <div className="w-10 h-10 bg-[#5E8B7E] text-white rounded-xl flex items-center justify-center shadow-lg shadow-[#5E8B7E]/20">
-            <Heart size={20} fill="currentColor" />
+            <Leaf size={20} weight="fill" />
           </div>
           <span className="text-2xl font-bold text-stone-800">Heal</span>
         </div>
@@ -74,12 +79,29 @@ const DashboardLayout = ({ children }) => {
           {navItems.map((item) => (
             <NavItem key={item.id} item={item} />
           ))}
+          
+          {/* Crisis Help Button */}
+          <button
+            onClick={() => setCrisisOpen(true)}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl transition-all text-red-600 hover:bg-red-50"
+          >
+            <Phone size={18} weight="regular" />
+            <span className="text-sm font-medium">Emergency</span>
+          </button>
         </nav>
 
         <div className="bg-white border border-stone-100 p-4 rounded-2xl flex items-center gap-3 shadow-sm">
-          <div className="w-10 h-10 rounded-full bg-[#E7F3F0] flex items-center justify-center text-[#5E8B7E] font-bold">
-            {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}
-          </div>
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt={user?.displayName || user?.username || 'User'}
+              className="w-10 h-10 rounded-full object-cover border-2 border-stone-200"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-[#E7F3F0] flex items-center justify-center text-[#5E8B7E] font-bold">
+              {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-stone-900 truncate">
               {user?.displayName || user?.username || 'User'}
@@ -90,7 +112,7 @@ const DashboardLayout = ({ children }) => {
             onClick={handleSignout}
             className="text-stone-400 hover:text-red-500 transition-colors"
           >
-            <LogOut size={20} />
+            <SignOut size={20} />
           </button>
         </div>
       </aside>
@@ -108,16 +130,19 @@ const DashboardLayout = ({ children }) => {
         {/* Mobile Header */}
         <div className="lg:hidden flex justify-between items-center mb-6">
           <div className="flex items-center gap-2 font-bold text-lg text-stone-800">
-            <Heart size={20} className="text-[#5E8B7E]" fill="currentColor" />
+            <Leaf size={20} className="text-[#5E8B7E]" weight="fill" />
             Heal
           </div>
           <button onClick={() => setSidebarOpen(true)}>
-            <Menu size={24} className="text-stone-600" />
+            <List size={24} className="text-stone-600" />
           </button>
         </div>
 
         {children}
       </main>
+      
+      {/* Crisis Help Modal */}
+      <CrisisHelp isOpen={crisisOpen} onClose={() => setCrisisOpen(false)} />
     </div>
   );
 };

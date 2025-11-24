@@ -86,6 +86,11 @@ export const userAPI = {
     const response = await api.get('/users/me');
     return response.data;
   },
+
+  updateMe: async (userData) => {
+    const response = await api.patch('/users/me', userData);
+    return response.data;
+  },
 };
 
 // Mood API
@@ -119,6 +124,11 @@ export const moodAPI = {
     const response = await api.delete(`/moods/${id}`);
     return response.data;
   },
+
+  getStats: async (params = {}) => {
+    const response = await api.get('/moods/stats', { params });
+    return response.data;
+  },
 };
 
 // Journal API
@@ -128,8 +138,8 @@ export const journalAPI = {
     return response.data;
   },
 
-  list: async () => {
-    const response = await api.get('/journals');
+  list: async (params = {}) => {
+    const response = await api.get('/journals', { params });
     return response.data;
   },
 
@@ -186,8 +196,18 @@ export const habitAPI = {
     return response.data;
   },
 
+  getStats: async () => {
+    const response = await api.get('/habits/stats');
+    return response.data;
+  },
+
   toggle: async (id, date) => {
     const response = await api.post(`/habits/${id}/toggle`, { date });
+    return response.data;
+  },
+
+  getStats: async () => {
+    const response = await api.get('/habits/stats');
     return response.data;
   },
 };
@@ -221,6 +241,53 @@ export const exerciseAPI = {
 
   delete: async (id) => {
     const response = await api.delete(`/exercises/${id}`);
+    return response.data;
+  },
+};
+
+// Sleep API
+export const sleepAPI = {
+  create: async (sleepData) => {
+    const response = await api.post('/sleeps', sleepData);
+    return response.data;
+  },
+
+  list: async (params = {}) => {
+    const response = await api.get('/sleeps', { params });
+    return response.data;
+  },
+
+  listAll: async () => {
+    const response = await api.get('/sleeps/all');
+    return response.data;
+  },
+
+  getById: async (id) => {
+    const response = await api.get(`/sleeps/${id}`);
+    return response.data;
+  },
+
+  update: async (id, sleepData) => {
+    const response = await api.patch(`/sleeps/${id}`, sleepData);
+    return response.data;
+  },
+
+  delete: async (id) => {
+    const response = await api.delete(`/sleeps/${id}`);
+    return response.data;
+  },
+
+  getFact: async (category = null) => {
+    const params = category ? { category } : {};
+    const response = await api.get('/sleeps/fact', { params });
+    return response.data;
+  },
+};
+
+// Overview API
+export const overviewAPI = {
+  get: async () => {
+    const response = await api.get('/overview');
     return response.data;
   },
 };
