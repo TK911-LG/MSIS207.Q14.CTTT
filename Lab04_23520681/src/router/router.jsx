@@ -22,30 +22,30 @@ export const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: '/home',
+        path: 'home',
         element: <Home />
       },
       {
-        path: '/about',
+        path: 'about',
         element: <About />
       },
       {
-        path: '/users/:userId',
+        path: 'users/:userId',
         element: <UserProfile />
       },
       {
-        path: '/exercises',
+        path: 'exercises',
         element: <Exercises />
       },
       {
         element: <ProtectedRoute />,
         children: [
           {
-            path: '/dashboard',
+            path: 'dashboard',
             element: <Dashboard />
           },
           {
-            path: '/dashboard/post/:postId',
+            path: 'dashboard/post/:postId',
             element: <PostDetail />
           }
         ]

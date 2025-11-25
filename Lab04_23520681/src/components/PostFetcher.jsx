@@ -19,7 +19,8 @@ export function PostFetcher() {
         const postData = await response.json()
         setData(postData)
       } catch (err) {
-        setError(err.message)
+        setError(err)
+        setData(null)
       } finally {
         setLoading(false)
       }
@@ -32,7 +33,7 @@ export function PostFetcher() {
     return (
       <div style={{ padding: '20px' }}>
         <h2>Post Fetcher</h2>
-        <p>Loading...</p>
+        <div>Loading...</div>
       </div>
     )
   }
@@ -41,7 +42,7 @@ export function PostFetcher() {
     return (
       <div style={{ padding: '20px' }}>
         <h2>Post Fetcher</h2>
-        <p style={{ color: 'red' }}>Error: {error}</p>
+        <div>Error: {error.message}</div>
       </div>
     )
   }
@@ -51,7 +52,7 @@ export function PostFetcher() {
       <h2>Post Fetcher</h2>
       {data && (
         <div>
-          <h3>{data.title}</h3>
+          <h1>{data.title}</h1>
           <p>{data.body}</p>
         </div>
       )}

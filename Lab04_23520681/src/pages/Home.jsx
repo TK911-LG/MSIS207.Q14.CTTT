@@ -8,6 +8,10 @@ export function Home() {
       <Link to="/about" style={{ color: 'blue', textDecoration: 'underline' }}>
         Go to About
       </Link>
+      <br />
+      <Link to="/users/123" style={{ color: 'blue', textDecoration: 'underline', marginTop: '10px', display: 'inline-block' }}>
+        View User 123
+      </Link>
     </div>
   )
 }
