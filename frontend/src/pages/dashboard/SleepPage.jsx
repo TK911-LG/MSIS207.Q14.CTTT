@@ -4,11 +4,13 @@ import {
   Pause, Play, Bed, Timer, Sparkle, CheckCircle, Calendar,
   TrendUp, Plus, X, Check, Star, ChartLine, ArrowRight
 } from 'phosphor-react';
-import { sleepAPI } from '../../services/api';
+import { sleepAPI, factAPI } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useTheme } from '../../context/ThemeContext';
 import TimePicker from '../../components/TimePicker';
 
 const SleepPage = () => {
+  const { getCardStyle } = useTheme();
   const [sleepEntries, setSleepEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
@@ -376,7 +378,7 @@ const SleepPage = () => {
       icon: Wind, 
       color: 'from-stone-400 to-stone-600',
       bgColor: 'bg-stone-50',
-      iconColor: 'text-stone-600',
+      iconColor: 'text-secondary',
       file: 'wind.mp3'
     },
     { 
@@ -406,7 +408,7 @@ const SleepPage = () => {
   useEffect(() => {
     const fetchFunFact = async () => {
       try {
-        const response = await sleepAPI.getFact();
+        const response = await factAPI.getRandom('sleep');
         setFunFact(response);
       } catch (error) {
         console.error('Error fetching sleep fact:', error);
@@ -495,21 +497,21 @@ const SleepPage = () => {
       {/* Header */}
       <header className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-5xl font-serif font-bold text-stone-900 mb-2">Sleep Tracker</h1>
-          <p className="text-stone-600 text-lg">Track your well-being journey.</p>
+          <h1 className="text-5xl font-serif font-bold text-primary mb-2">Sleep Tracker</h1>
+          <p className="text-secondary text-lg">Track your well-being journey.</p>
         </div>
         <div className="flex items-center gap-3">
           {!isSleeping && !showLogForm && (
             <>
               <button
                 onClick={() => setShowLogForm(true)}
-                className="px-4 py-2 text-stone-600 font-semibold hover:text-stone-900 transition-colors"
+                className="px-4 py-2 text-secondary font-semibold hover:text-primary transition-colors"
               >
                 Manual Log
               </button>
               <button
                 onClick={handleStartSleep}
-                className="flex items-center gap-2 px-6 py-3 bg-[#5E8B7E] text-white rounded-xl font-semibold hover:bg-[#4a7a6d] transition-all shadow-lg hover:shadow-xl"
+                className="flex items-center gap-2 px-6 py-3 bg-accent-sage text-inverse rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
               >
                 <Moon size={20} weight="fill" />
                 Start Sleep
@@ -535,11 +537,11 @@ const SleepPage = () => {
 
       {/* Manual Log Sleep Form (for past entries) */}
       {showLogForm && (
-        <div className="bg-white rounded-3xl p-8 card-shadow">
+        <div className="rounded-3xl p-8" style={getCardStyle()}>
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h3 className="text-2xl font-bold text-stone-900">Log Past Sleep</h3>
-              <p className="text-sm text-stone-500 mt-1">Manually log a sleep entry from a previous night</p>
+              <h3 className="text-2xl font-bold text-primary">Log Past Sleep</h3>
+              <p className="text-sm text-secondary mt-1">Manually log a sleep entry from a previous night</p>
             </div>
             <button
               onClick={() => {
@@ -552,7 +554,7 @@ const SleepPage = () => {
                   date: new Date().toISOString().split('T')[0],
                 });
               }}
-              className="p-2 rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-600 transition-colors"
+              className="p-2 rounded-full hover:bg-tertiary text-secondary hover:text-primary transition-colors"
             >
               <X size={20} />
             </button>
@@ -560,18 +562,18 @@ const SleepPage = () => {
 
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-stone-700 mb-2">Date</label>
+              <label className="block text-sm font-semibold text-primary mb-2">Date</label>
               <input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:border-[#5E8B7E] focus:bg-white text-stone-800"
+                className="w-full px-4 py-3 bg-tertiary border border-primary rounded-xl focus:outline-none focus:border-accent-sage focus:bg-elevated text-primary"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-2 flex items-center gap-2">
+                <label className="block text-sm font-semibold text-primary mb-2 flex items-center gap-2">
                   <Moon size={16} />
                   Bedtime
                 </label>
@@ -583,7 +585,7 @@ const SleepPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-2 flex items-center gap-2">
+                <label className="block text-sm font-semibold text-primary mb-2 flex items-center gap-2">
                   <Clock size={16} />
                   Wake Time
                 </label>
@@ -598,10 +600,10 @@ const SleepPage = () => {
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-semibold text-stone-700">
+                <label className="block text-sm font-semibold text-primary">
                   Sleep Quality
                 </label>
-                <span className="text-sm font-bold text-[#5E8B7E]">{formData.quality}/10</span>
+                <span className="text-sm font-bold text-accent-sage">{formData.quality}/10</span>
               </div>
               <div className="flex items-center gap-2 mb-2">
                 {[...Array(10)].map((_, i) => (
@@ -609,7 +611,7 @@ const SleepPage = () => {
                     key={i}
                     size={20}
                     weight={i < formData.quality ? 'fill' : 'regular'}
-                    className={i < formData.quality ? 'text-amber-400' : 'text-stone-300'}
+                    className={i < formData.quality ? 'text-amber-400' : 'text-tertiary'}
                     onClick={() => setFormData({ ...formData, quality: i + 1 })}
                   />
                 ))}
@@ -625,13 +627,13 @@ const SleepPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-stone-700 mb-2">Notes (Optional)</label>
+              <label className="block text-sm font-semibold text-primary mb-2">Notes (Optional)</label>
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="How did you sleep? Any observations?"
                 rows={3}
-                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:border-[#5E8B7E] focus:bg-white text-stone-800 resize-none"
+                className="w-full px-4 py-3 bg-tertiary border border-primary rounded-xl focus:outline-none focus:border-accent-sage focus:bg-elevated text-primary resize-none placeholder-secondary"
               />
             </div>
 
@@ -647,14 +649,14 @@ const SleepPage = () => {
                     date: new Date().toISOString().split('T')[0],
                   });
                 }}
-                className="flex-1 px-4 py-3 bg-stone-100 text-stone-700 rounded-xl font-semibold hover:bg-stone-200 transition-colors"
+                className="flex-1 px-4 py-3 bg-tertiary text-primary rounded-xl font-semibold hover:bg-tertiary/80 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleLogSleep}
                 disabled={isSaving || !formData.bedtime || !formData.wakeTime}
-                className="flex-1 px-4 py-3 bg-stone-900 text-white rounded-xl font-semibold hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-3 bg-primary text-inverse rounded-xl font-semibold hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSaving ? (
                   <>
@@ -675,43 +677,47 @@ const SleepPage = () => {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="text-stone-400 text-sm">Loading sleep data...</div>
+          <div className="text-secondary text-sm">Loading sleep data...</div>
         </div>
       ) : (
         <>
           {/* Main Grid: Sleep Insights + Sleep Duration */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Sleep Insights Card */}
-            <div className="bg-white rounded-3xl p-8 card-shadow">
+            <div className="rounded-3xl p-8" style={getCardStyle()}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-[#E7F3F0] flex items-center justify-center">
-                  <Sparkle size={24} className="text-[#5E8B7E]" weight="fill" />
+                <div className="w-12 h-12 rounded-xl bg-accent-sage-light flex items-center justify-center">
+                  <Sparkle size={24} className="text-accent-sage" weight="fill" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-stone-900">Sleep Insights</h3>
-                  <p className="text-xs text-stone-500 mt-1">Based on your data</p>
+                  <h3 className="text-xl font-bold text-primary">Sleep Insights</h3>
+                  <p className="text-xs text-secondary mt-1">Based on your data</p>
                 </div>
               </div>
 
               {insight ? (
-                <div className={`p-5 rounded-2xl border-2 mb-4 ${
-                  insight.type === 'positive'
-                    ? 'bg-emerald-50 border-emerald-200'
-                    : insight.type === 'attention'
-                    ? 'bg-amber-50 border-amber-200'
-                    : 'bg-blue-50 border-blue-200'
-                }`}>
+                <div 
+                  className="p-5 rounded-2xl border-2 mb-4"
+                  style={{
+                    ...getCardStyle(),
+                    borderColor: insight.type === 'positive'
+                      ? 'rgba(16, 185, 129, 0.3)'
+                      : insight.type === 'attention'
+                      ? 'rgba(245, 158, 11, 0.3)'
+                      : 'rgba(59, 130, 246, 0.3)',
+                  }}
+                >
                   <div className="flex items-start gap-3">
                     <span className="text-2xl shrink-0">{insight.icon}</span>
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-stone-900 mb-1">{insight.message}</p>
-                      <p className="text-xs text-stone-600 italic">{insight.tip}</p>
+                      <p className="text-sm font-semibold text-primary mb-1">{insight.message}</p>
+                      <p className="text-xs text-secondary italic">{insight.tip}</p>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="p-5 rounded-2xl bg-stone-50 border border-stone-200 mb-4">
-                  <p className="text-sm text-stone-600 text-center">
+                <div className="p-5 rounded-2xl mb-4" style={getCardStyle()}>
+                  <p className="text-sm text-secondary text-center">
                     Log more sleep entries to get personalized insights
                   </p>
                 </div>
@@ -719,35 +725,41 @@ const SleepPage = () => {
 
               {/* Fun Fact */}
               {funFact ? (
-                <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200">
+                <div 
+                  className="p-5 rounded-2xl border"
+                  style={{
+                    ...getCardStyle(),
+                    borderColor: 'rgba(99, 102, 241, 0.3)',
+                  }}
+                >
                   <div className="flex items-start gap-3">
                     <span className="text-2xl shrink-0">{funFact.icon}</span>
                     <div className="flex-1">
-                      <h4 className="text-sm font-bold text-stone-900 mb-1">{funFact.title}</h4>
-                      <p className="text-xs text-stone-700 leading-relaxed">{funFact.fact}</p>
+                      <h4 className="text-sm font-bold text-primary mb-1">{funFact.title}</h4>
+                      <p className="text-xs text-primary leading-relaxed">{funFact.fact}</p>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="p-5 rounded-2xl bg-stone-50 border border-stone-200">
-                  <p className="text-xs text-stone-500 text-center">Loading sleep fact...</p>
+                <div className="p-5 rounded-2xl" style={getCardStyle()}>
+                  <p className="text-xs text-secondary text-center">Loading sleep fact...</p>
                 </div>
               )}
             </div>
 
             {/* Sleep Duration */}
-            <div className="bg-white rounded-3xl p-8 card-shadow">
+            <div className="rounded-3xl p-8" style={getCardStyle()}>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-xl font-bold text-stone-900">Sleep Duration</h3>
-                  <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mt-1">
+                  <h3 className="text-xl font-bold text-primary">Sleep Duration</h3>
+                  <p className="text-xs font-semibold text-secondary uppercase tracking-wider mt-1">
                     Last 7 Days
                   </p>
                 </div>
                 {stats && (
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#5E8B7E]"></div>
-                    <span className="text-sm text-stone-500">
+                    <div className="w-2 h-2 rounded-full bg-accent-sage"></div>
+                    <span className="text-sm text-secondary">
                       Avg: {formatDuration(stats.recentAvgDuration)}
                     </span>
                   </div>
@@ -764,31 +776,31 @@ const SleepPage = () => {
                   
                   return (
                     <div key={i} className="flex items-center gap-3">
-                      <div className="w-12 text-xs font-semibold text-stone-600">
+                      <div className="w-12 text-xs font-semibold text-secondary">
                         {fullDayNames[i]}
                       </div>
                       <div className="flex-1 relative">
-                        <div className="h-8 bg-stone-100 rounded-lg overflow-hidden">
+                        <div className="h-8 bg-tertiary rounded-lg overflow-hidden">
                           {day.duration ? (
                             <div
-                              className="h-full bg-gradient-to-r from-[#5E8B7E] to-[#4a7a6d] rounded-lg transition-all duration-500 flex items-center justify-end pr-2"
+                              className="h-full bg-gradient-to-r from-accent-sage to-accent-sage/80 rounded-lg transition-all duration-500 flex items-center justify-end pr-2"
                               style={{ width: `${percentage}%` }}
                             >
                               {percentage > 15 && (
-                                <span className="text-xs font-bold text-white">
+                                <span className="text-xs font-bold text-inverse">
                                   {formatDuration(day.duration)}
                                 </span>
                               )}
                             </div>
                           ) : (
                             <div className="h-full flex items-center justify-center">
-                              <span className="text-xs text-stone-400">No data</span>
+                              <span className="text-xs text-secondary">No data</span>
                             </div>
                           )}
                         </div>
                       </div>
                       {day.duration && percentage <= 15 && (
-                        <div className="w-16 text-xs font-semibold text-stone-700 text-right">
+                        <div className="w-16 text-xs font-semibold text-primary text-right">
                           {formatDuration(day.duration)}
                         </div>
                       )}
@@ -803,16 +815,16 @@ const SleepPage = () => {
           {stats && (stats.bedtime || stats.wakeTime) && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Bedtime */}
-              <div className="bg-white rounded-3xl p-6 card-shadow">
+              <div className="rounded-3xl p-6" style={getCardStyle()}>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center">
-                    <Moon size={24} className="text-indigo-600" weight="fill" />
+                  <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                    <Moon size={24} className="text-indigo-600 dark:text-indigo-400" weight="fill" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">
+                    <p className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1">
                       Bedtime
                     </p>
-                    <p className="text-2xl font-bold text-stone-900">
+                    <p className="text-2xl font-bold text-primary">
                       {stats.bedtime ? stats.bedtime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}
                     </p>
                   </div>
@@ -820,16 +832,16 @@ const SleepPage = () => {
               </div>
 
               {/* Wake Up */}
-              <div className="bg-white rounded-3xl p-6 card-shadow">
+              <div className="rounded-3xl p-6" style={getCardStyle()}>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
-                    <Clock size={24} className="text-amber-600" weight="fill" />
+                  <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                    <Clock size={24} className="text-amber-600 dark:text-amber-400" weight="fill" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">
+                    <p className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1">
                       Wake Up
                     </p>
-                    <p className="text-2xl font-bold text-stone-900">
+                    <p className="text-2xl font-bold text-primary">
                       {stats.wakeTime ? stats.wakeTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}
                     </p>
                   </div>
@@ -841,8 +853,8 @@ const SleepPage = () => {
           {/* Sleep Stages and Sleep Sounds */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Sleep Stages */}
-            <div className="bg-white rounded-3xl p-8 card-shadow">
-              <h3 className="text-xl font-bold text-stone-900 mb-6">Sleep Stages</h3>
+            <div className="rounded-3xl p-8" style={getCardStyle()}>
+              <h3 className="text-xl font-bold text-primary mb-6">Sleep Stages</h3>
               
               {stats?.sleepStages ? (
                 <div className="space-y-4">
@@ -873,37 +885,37 @@ const SleepPage = () => {
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <div className="w-3 h-3 rounded bg-indigo-500"></div>
-                        <span className="font-semibold text-stone-700">Deep</span>
+                        <span className="font-semibold text-primary">Deep</span>
                       </div>
-                      <p className="text-stone-500">{stats.sleepStages.deep}%</p>
+                      <p className="text-secondary">{stats.sleepStages.deep}%</p>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <div className="w-3 h-3 rounded bg-purple-500"></div>
-                        <span className="font-semibold text-stone-700">REM</span>
+                        <span className="font-semibold text-primary">REM</span>
                       </div>
-                      <p className="text-stone-500">{stats.sleepStages.rem}%</p>
+                      <p className="text-secondary">{stats.sleepStages.rem}%</p>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <div className="w-3 h-3 rounded bg-blue-400"></div>
-                        <span className="font-semibold text-stone-700">Light</span>
+                        <span className="font-semibold text-primary">Light</span>
                       </div>
-                      <p className="text-stone-500">{stats.sleepStages.light}%</p>
+                      <p className="text-secondary">{stats.sleepStages.light}%</p>
                     </div>
                   </div>
                 </div>
               ) : (
-                <p className="text-stone-400 text-sm">No sleep stage data available</p>
+                <p className="text-secondary text-sm">No sleep stage data available</p>
               )}
             </div>
 
             {/* Sleep Sounds */}
-            <div className="bg-white rounded-3xl p-8 card-shadow">
+            <div className="rounded-3xl p-8" style={getCardStyle()}>
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-stone-900">Sleep Sounds</h3>
+                <h3 className="text-xl font-bold text-primary">Sleep Sounds</h3>
                 {soundscapes.length > 3 && (
-                  <button className="text-sm text-[#5E8B7E] font-semibold hover:underline flex items-center gap-1">
+                  <button className="text-sm text-accent-sage font-semibold hover:underline flex items-center gap-1">
                     View All
                     <ArrowRight size={16} />
                   </button>
@@ -920,8 +932,8 @@ const SleepPage = () => {
                       onClick={() => toggleSound(s.id)}
                       className={`w-full p-4 rounded-xl border-2 transition-all flex items-center gap-4 ${
                         isActive
-                          ? 'border-[#5E8B7E] bg-[#E7F3F0]'
-                          : 'border-stone-200 bg-white hover:border-stone-300'
+                          ? 'border-accent-sage bg-accent-sage-light'
+                          : 'border-primary bg-elevated hover:border-primary/80'
                       }`}
                     >
                       <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
@@ -931,19 +943,19 @@ const SleepPage = () => {
                       }`}>
                         <IconComponent size={20} weight={isActive ? 'fill' : 'regular'} />
                       </div>
-                      <span className="flex-1 text-left font-semibold text-stone-900">
+                      <span className="flex-1 text-left font-semibold text-primary">
                         {s.label}
                       </span>
                       {isActive && (
                         <div className="flex items-center gap-2">
                           {isPlaying ? (
                             <div className="flex items-center gap-1">
-                              <div className="w-1.5 h-4 bg-[#5E8B7E] rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
-                              <div className="w-1.5 h-6 bg-[#5E8B7E] rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></div>
-                              <div className="w-1.5 h-4 bg-[#5E8B7E] rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
+                              <div className="w-1.5 h-4 bg-accent-sage rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
+                              <div className="w-1.5 h-6 bg-accent-sage rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></div>
+                              <div className="w-1.5 h-4 bg-accent-sage rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
                             </div>
                           ) : (
-                            <Pause size={16} className="text-[#5E8B7E]" />
+                            <Pause size={16} className="text-accent-sage" />
                           )}
                         </div>
                       )}
@@ -991,7 +1003,8 @@ const SleepPage = () => {
             >
               <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
               <div
-                className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 z-10"
+                className="relative rounded-3xl shadow-2xl w-full max-w-md p-8 z-10"
+                style={getCardStyle()}
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="text-center mb-6">

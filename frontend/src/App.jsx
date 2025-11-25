@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import LandingPage from './components/LandingPage';
 import LoginPage from './pages/LoginPage';
@@ -14,6 +15,7 @@ import HabitsPage from './pages/dashboard/HabitsPage';
 import JournalPage from './pages/dashboard/JournalPage';
 import InsightsPage from './pages/dashboard/InsightsPage';
 import SettingsPage from './pages/dashboard/SettingsPage';
+import CheckoutPage from './pages/dashboard/CheckoutPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -21,8 +23,8 @@ const ProtectedRoute = ({ children }) => {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAF9] flex items-center justify-center">
-        <div className="text-stone-500">Loading...</div>
+      <div className="min-h-screen bg-primary flex items-center justify-center">
+        <div className="text-secondary">Loading...</div>
       </div>
     );
   }
@@ -32,40 +34,43 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <Router
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<OverviewPage />} />
-              <Route path="mood" element={<MoodPage />} />
-              <Route path="sleep" element={<SleepPage />} />
-              <Route path="habits" element={<HabitsPage />} />
-              <Route path="journal" element={<JournalPage />} />
-              <Route path="insights" element={<InsightsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Router>
-      </ToastProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <Router
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<OverviewPage />} />
+                <Route path="mood" element={<MoodPage />} />
+                <Route path="sleep" element={<SleepPage />} />
+                <Route path="habits" element={<HabitsPage />} />
+                <Route path="journal" element={<JournalPage />} />
+                <Route path="insights" element={<InsightsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+                <Route path="checkout" element={<CheckoutPage />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Router>
+        </ToastProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

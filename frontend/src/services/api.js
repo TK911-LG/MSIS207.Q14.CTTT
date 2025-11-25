@@ -205,44 +205,6 @@ export const habitAPI = {
     const response = await api.post(`/habits/${id}/toggle`, { date });
     return response.data;
   },
-
-  getStats: async () => {
-    const response = await api.get('/habits/stats');
-    return response.data;
-  },
-};
-
-// Exercise API
-export const exerciseAPI = {
-  create: async (exerciseData) => {
-    const response = await api.post('/exercises', exerciseData);
-    return response.data;
-  },
-
-  list: async () => {
-    const response = await api.get('/exercises');
-    return response.data;
-  },
-
-  listAll: async () => {
-    const response = await api.get('/exercises/all');
-    return response.data;
-  },
-
-  getById: async (id) => {
-    const response = await api.get(`/exercises/${id}`);
-    return response.data;
-  },
-
-  update: async (id, exerciseData) => {
-    const response = await api.patch(`/exercises/${id}`, exerciseData);
-    return response.data;
-  },
-
-  delete: async (id) => {
-    const response = await api.delete(`/exercises/${id}`);
-    return response.data;
-  },
 };
 
 // Sleep API
@@ -284,10 +246,67 @@ export const sleepAPI = {
   },
 };
 
+// Fact API (New unified API for all facts)
+export const factAPI = {
+  getRandom: async (category = null) => {
+    const params = category ? { category } : {};
+    const response = await api.get('/facts', { params });
+    return response.data;
+  },
+  
+  getAll: async (category = null, isActive = true) => {
+    const params = {};
+    if (category) params.category = category;
+    if (isActive !== undefined) params.isActive = isActive;
+    const response = await api.get('/facts/all', { params });
+    return response.data;
+  },
+  
+  create: async (factData) => {
+    const response = await api.post('/facts', factData);
+    return response.data;
+  },
+  
+  update: async (id, factData) => {
+    const response = await api.patch(`/facts/${id}`, factData);
+    return response.data;
+  },
+  
+  delete: async (id) => {
+    const response = await api.delete(`/facts/${id}`);
+    return response.data;
+  },
+};
+
 // Overview API
 export const overviewAPI = {
   get: async () => {
     const response = await api.get('/overview');
+    return response.data;
+  },
+};
+
+// Payment API
+export const paymentAPI = {
+  // Create PayPal payment link
+  createPayPalPayment: async (planType, amount) => {
+    const response = await api.post('/payments/paypal/create', { planType, amount });
+    return response.data;
+  },
+  
+  // Verify PayPal payment
+  verifyPayPalPayment: async (paymentId, payerId, token, plan) => {
+    const params = { paymentId, plan };
+    if (payerId) params.payerId = payerId;
+    if (token) params.token = token;
+    
+    const response = await api.get('/payments/paypal/verify', { params });
+    return response.data;
+  },
+  
+  // Get payment status
+  getPaymentStatus: async (paymentId) => {
+    const response = await api.get(`/payments/status/${paymentId}`);
     return response.data;
   },
 };

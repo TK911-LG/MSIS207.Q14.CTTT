@@ -63,7 +63,7 @@ const FadeIn = ({ children, delay = 0, className = "", direction = "up" }) => {
     <div
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-all duration-700 ease-out transform ${
+      className={`transition-all duration-500 ease-out transform ${
         isVisible ? `opacity-100 ${directions[direction]}` : `opacity-0 ${directions[direction]}`
       } ${className}`}
     >
@@ -75,18 +75,27 @@ const FadeIn = ({ children, delay = 0, className = "", direction = "up" }) => {
 // --- STYLES ---
 const CustomStyles = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     :root {
       --bg-page: #FAFAF9;
-      --text-main: #1C1917;
-      --text-muted: #78716C;
+      --text-main: #0A0A0A;
+      --text-muted: #737373;
+      --text-subtle: #A3A3A3;
       --sage: #5E8B7E;
       --clay: #D97757;
+      --spacing-xs: 0.5rem;
+      --spacing-sm: 1rem;
+      --spacing-md: 1.5rem;
+      --spacing-lg: 2rem;
+      --spacing-xl: 3rem;
+      --spacing-2xl: 4rem;
+      --spacing-3xl: 6rem;
     }
     
     * {
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
     }
     
     html {
@@ -94,10 +103,11 @@ const CustomStyles = () => (
     }
     
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background-color: var(--bg-page);
       color: var(--text-main);
       overflow-x: hidden;
+      letter-spacing: -0.01em;
     }
     
     .bg-grid-pattern {
@@ -125,19 +135,15 @@ const CustomStyles = () => (
     }
     
     .bento-card {
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(28, 25, 23, 0.08);
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      will-change: transform;
+      background: rgba(255, 255, 255, 1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform, box-shadow;
     }
     
     .bento-card:hover {
-      background: rgba(255, 255, 255, 0.95);
-      border-color: rgba(94, 139, 126, 0.25);
-      box-shadow: 0 24px 48px -12px rgba(94, 139, 126, 0.15);
-      transform: translateY(-4px) scale(1.01);
+      border-color: rgba(94, 139, 126, 0.3);
+      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
     }
     
     @keyframes float { 
@@ -149,64 +155,7 @@ const CustomStyles = () => (
       animation: float 12s ease-in-out infinite;
     }
     
-    .btn-primary {
-      background: #1C1917;
-      color: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
     
-    .btn-primary::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      transition: left 0.5s;
-    }
-    
-    .btn-primary:hover::before {
-      left: 100%;
-    }
-    
-    .btn-primary:hover {
-      background: #292524;
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.2);
-    }
-    
-    .btn-primary:active {
-      transform: translateY(0);
-    }
-    
-    .smooth-reveal {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-    }
-    
-    .smooth-reveal.revealed {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    
-    .gradient-text {
-      background: linear-gradient(135deg, #5E8B7E 0%, #2F5F55 50%, #5E8B7E 100%);
-      background-size: 200% 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: gradientShift 5s ease infinite;
-    }
-    
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
     
     .glass-effect {
       background: rgba(255, 255, 255, 0.6);
@@ -232,40 +181,45 @@ const Navbar = ({ onLogin, onSignup }) => {
   }, [scrollPos]);
   
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ease-out ${
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ease-out ${
       isScrolled 
-        ? 'bg-[#FAFAF9]/90 backdrop-blur-xl border-b border-stone-200/60 shadow-sm' 
+        ? 'bg-white/80 backdrop-blur-xl border-b border-stone-200/50 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]' 
         : 'bg-transparent'
     }`}>
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <div className="w-8 h-8 rounded-lg bg-[#E7F3F0] flex items-center justify-center text-[#5E8B7E] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
+      <div className="max-w-7xl mx-auto px-6 md:px-8 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <div className="w-8 h-8 rounded-lg bg-[#5E8B7E] flex items-center justify-center text-white transition-transform duration-200 group-hover:scale-105">
             <Leaf size={18} weight="fill" />
           </div>
-          <span className="font-bold text-stone-800 text-lg tracking-tight transition-colors group-hover:text-[#5E8B7E]">Heal</span>
+          <span className="font-semibold text-stone-900 text-base tracking-tight">Heal</span>
         </div>
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-stone-500">
-          {['Method', 'Features', 'Science', 'Pricing'].map(item => (
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-stone-600">
+          {['Features', 'How it works', 'Pricing'].map(item => (
             <a 
               key={item} 
-              href="#" 
-              className="hover:text-[#5E8B7E] transition-all duration-300 hover:scale-105 relative group"
+              href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+              onClick={(e) => {
+                e.preventDefault();
+                const id = item.toLowerCase().replace(/\s+/g, '-');
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="hover:text-stone-900 transition-colors duration-200 relative group"
             >
               {item}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#5E8B7E] transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-stone-900 transition-all duration-200 group-hover:w-full"></span>
             </a>
           ))}
         </div>
         <div className="flex items-center gap-3">
           <button 
             onClick={onLogin} 
-            className="text-sm font-semibold text-stone-600 hover:text-stone-900 px-3 py-2 transition-all duration-300 hover:scale-105"
+            className="text-sm font-medium text-stone-600 hover:text-stone-900 px-4 py-2 transition-colors duration-200"
           >
             Log in
           </button>
           <button 
             onClick={onSignup} 
-            className="text-sm font-semibold btn-primary px-4 py-2 rounded-full"
+            className="text-sm font-semibold bg-stone-900 text-white px-4 py-2 rounded-lg hover:bg-stone-800 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           >
             Start Free
           </button>
@@ -346,14 +300,14 @@ const LandingContent = ({ onSignup }) => {
         />
         
         <FadeIn delay={100}>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-stone-900 leading-[1.1] mb-8">
+          <h1 className="text-6xl md:text-8xl font-bold tracking-[-0.02em] text-stone-900 leading-[1.05] mb-6 md:mb-8">
             Your journey to <br className="hidden md:block" />
-            <span className="gradient-text">healing starts here.</span>
+            <span className="text-[#5E8B7E]">healing starts here.</span>
           </h1>
         </FadeIn>
         
         <FadeIn delay={200}>
-          <p className="text-lg md:text-xl text-stone-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-xl md:text-2xl text-stone-600 max-w-3xl mx-auto mb-12 md:mb-16 leading-[1.6] font-normal">
             A compassionate space to track your emotions, nurture your wellbeing, and heal from within. Designed with care for your mental health journey.
           </p>
         </FadeIn>
@@ -362,10 +316,16 @@ const LandingContent = ({ onSignup }) => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button 
               onClick={onSignup} 
-              className="h-14 px-8 rounded-full btn-primary text-lg font-bold flex items-center gap-2 group relative"
+              className="h-14 px-8 rounded-lg bg-stone-900 text-white text-base font-semibold flex items-center gap-2 group relative hover:bg-stone-800 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             >
               <span className="relative z-10">Start healing today</span>
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300 relative z-10" />
+              <ArrowRight size={18} className="group-hover:translate-x-0.5 transition-transform duration-200 relative z-10" />
+            </button>
+            <button 
+              onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+              className="h-14 px-8 rounded-lg border border-stone-300 text-stone-700 text-base font-semibold hover:bg-stone-50 transition-all duration-200"
+            >
+              Learn more
             </button>
           </div>
         </FadeIn>
@@ -413,18 +373,14 @@ const LandingContent = ({ onSignup }) => {
 
       {/* Social Proof */}
       <FadeIn delay={100}>
-        <section className="py-12 border-y border-stone-100 bg-white/50 backdrop-blur-sm">
+        <section className="py-12 md:py-16 border-y border-stone-200/60 bg-white/80 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto text-center">
-            <p className="text-xs text-stone-400 font-bold tracking-widest mb-8 uppercase">Trusted by teams at</p>
-            <div className="flex flex-wrap justify-center gap-16 opacity-40 grayscale mix-blend-multiply">
+            <p className="text-xs text-stone-500 font-medium tracking-wider mb-8 uppercase">Trusted by teams at</p>
+            <div className="flex flex-wrap justify-center gap-12 md:gap-16 items-center">
               {['Vogue', 'HEADSPACE', 'Linear', 'CALM'].map((brand, i) => (
                 <div 
                   key={brand} 
-                  className="text-xl font-black text-stone-800 hover:opacity-60 transition-opacity duration-300 cursor-default"
-                  style={{ 
-                    fontFamily: i === 0 ? 'serif' : i === 2 ? 'monospace' : 'sans-serif',
-                    transitionDelay: `${i * 50}ms`
-                  }}
+                  className="text-lg md:text-xl font-semibold text-stone-400 hover:text-stone-600 transition-colors duration-200 cursor-default"
                 >
                   {brand}
                 </div>
@@ -435,18 +391,18 @@ const LandingContent = ({ onSignup }) => {
       </FadeIn>
 
       {/* Features Bento Grid */}
-      <section className="py-32 max-w-7xl mx-auto">
+      <section id="features" className="py-24 md:py-32 max-w-7xl mx-auto">
         <FadeIn>
-          <div className="mb-16 max-w-2xl">
-            <h2 className="text-3xl md:text-4xl font-bold text-stone-900 mb-4">
-              Designed for <span className="text-[#D97757] font-serif italic">flow state</span>.
+          <div className="mb-16 md:mb-20 max-w-3xl">
+            <h2 className="text-4xl md:text-5xl font-bold text-stone-900 mb-5 tracking-[-0.02em] leading-[1.1]">
+              Designed for <span className="text-[#5E8B7E]">flow state</span>.
             </h2>
-            <p className="text-lg text-stone-500">Every interaction is optimized to reduce cognitive load. You just focus on yourself.</p>
+            <p className="text-lg md:text-xl text-stone-600 leading-[1.6]">Every interaction is optimized to reduce cognitive load. You just focus on yourself.</p>
           </div>
         </FadeIn>
-        <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-2 gap-4 md:gap-6">
           <BentoItem 
-            className="md:col-span-2 md:row-span-2 bg-white"
+            className="md:col-span-2 md:row-span-2 bg-white border border-stone-200/60"
             title="Intelligent Mood Tracking"
             desc="Log your emotional state in seconds. The system automatically analyzes and visualizes your emotional flow over weeks and months."
             icon={Activity}
@@ -455,16 +411,16 @@ const LandingContent = ({ onSignup }) => {
             <MoodVisual />
           </BentoItem>
           <BentoItem 
-            className="bg-[#FAFAF9]"
+            className="bg-white border border-stone-200/60"
             title="Deep Focus Mode"
-            desc="Integrated Pomodoro Timer and ambient sounds (Rain, White Noise) to help you enter the flow state."
+            desc="Integrated Pomodoro Timer and ambient sounds to help you enter the flow state."
             icon={Lightning}
             delay={200}
           >
             <FocusVisual />
           </BentoItem>
           <BentoItem 
-            className="bg-white"
+            className="bg-white border border-stone-200/60"
             title="Gratitude Journal"
             desc="A safe, private space with daily writing prompts to overcome writer's block."
             icon={Brain}
@@ -476,21 +432,29 @@ const LandingContent = ({ onSignup }) => {
       </section>
 
       {/* How It Works */}
-      <section className="py-24 border-t border-stone-100">
+      <section id="how-it-works" className="py-24 md:py-32 border-t border-stone-200/60">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-            <div className="hidden md:block absolute top-8 left-0 w-full h-0.5 bg-gradient-to-r from-stone-200 via-stone-200 to-transparent -z-10" />
+          <FadeIn>
+            <div className="mb-16 md:mb-20 max-w-3xl">
+              <h2 className="text-4xl md:text-5xl font-bold text-stone-900 mb-5 tracking-[-0.02em] leading-[1.1]">
+                How it works
+              </h2>
+              <p className="text-lg md:text-xl text-stone-600 leading-[1.6]">Get started in minutes. Simple, intuitive, and designed for your wellbeing.</p>
+            </div>
+          </FadeIn>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 relative">
+            <div className="hidden md:block absolute top-12 left-0 w-full h-px bg-gradient-to-r from-stone-200 via-stone-300 to-stone-200 -z-10" />
             {[
               { step: "01", title: "Set up your space", desc: "Customize your interface and choose the habits you want to cultivate." },
               { step: "02", title: "Daily check-in", desc: "Spend 2 minutes each morning and evening to log emotions and thoughts." },
               { step: "03", title: "View Insights", desc: "Receive weekly analysis reports to understand yourself better." }
             ].map((item, i) => (
-              <FadeIn key={i} delay={i * 150} direction="up">
-                <div className="bg-[#FAFAF9] w-16 h-16 rounded-2xl border border-stone-200 flex items-center justify-center text-xl font-bold text-stone-400 mb-6 shadow-sm hover:scale-110 hover:border-[#5E8B7E]/30 transition-all duration-300">
+              <FadeIn key={i} delay={i * 100} direction="up">
+                <div className="bg-white w-14 h-14 rounded-xl border border-stone-200 flex items-center justify-center text-lg font-semibold text-stone-700 mb-6 hover:border-[#5E8B7E] hover:bg-[#5E8B7E]/5 transition-all duration-200">
                   {item.step}
                 </div>
-                <h3 className="text-xl font-bold text-stone-800 mb-3">{item.title}</h3>
-                <p className="text-stone-500 leading-relaxed">{item.desc}</p>
+                <h3 className="text-xl md:text-2xl font-semibold text-stone-900 mb-3 tracking-tight">{item.title}</h3>
+                <p className="text-base text-stone-600 leading-[1.6]">{item.desc}</p>
               </FadeIn>
             ))}
           </div>
@@ -498,52 +462,59 @@ const LandingContent = ({ onSignup }) => {
       </section>
 
       {/* Final CTA */}
-      <section className="py-32 px-6">
+      <section id="pricing" className="py-24 md:py-32 px-6">
         <FadeIn>
-          <div className="max-w-4xl mx-auto bg-[#1C1917] rounded-[40px] p-12 md:p-20 text-center relative overflow-hidden shadow-2xl">
-            <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+          <div className="max-w-4xl mx-auto bg-stone-900 rounded-2xl p-12 md:p-20 text-center relative overflow-hidden">
             <div className="relative z-10">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-5 tracking-[-0.02em] leading-[1.1]">
                 Begin your healing journey today.
               </h2>
-              <p className="text-stone-400 text-lg mb-10 max-w-xl mx-auto">
+              <p className="text-stone-400 text-lg md:text-xl mb-10 max-w-xl mx-auto leading-[1.6]">
                 Join thousands of people who are taking steps toward better mental health and emotional wellbeing.
               </p>
-              <button 
-                onClick={onSignup} 
-                className="bg-white text-[#1C1917] px-10 py-4 rounded-full text-lg font-bold hover:bg-stone-100 transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_-10px_rgba(255,255,255,0.4)]"
-              >
-                Start your free trial
-              </button>
-              <p className="mt-6 text-sm text-stone-500">No credit card required • Cancel anytime</p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button 
+                  onClick={onSignup} 
+                  className="bg-white text-stone-900 px-8 py-3.5 rounded-lg text-base font-semibold hover:bg-stone-100 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  Start your free trial
+                </button>
+                <button 
+                  onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="text-white/80 text-base font-medium hover:text-white transition-colors duration-200"
+                >
+                  Learn more →
+                </button>
+              </div>
+              <p className="mt-8 text-sm text-stone-500">No credit card required • Cancel anytime</p>
             </div>
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#5E8B7E] rounded-full blur-[100px] opacity-20 animate-pulse" style={{ animationDuration: '4s' }} />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#D97757] rounded-full blur-[100px] opacity-20 animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }} />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#5E8B7E]/20 rounded-full blur-[120px] -z-10" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D97757]/20 rounded-full blur-[120px] -z-10" />
           </div>
         </FadeIn>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-stone-200 py-16 bg-white">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-6">
-          <div className="flex items-center gap-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
-            <div className="w-6 h-6 rounded bg-stone-100 flex items-center justify-center text-[#5E8B7E]">
-              <Leaf size={14} weight="fill" />
+      <footer className="border-t border-stone-200/60 py-12 md:py-16 bg-white">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 px-6 md:px-8">
+          <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <div className="w-7 h-7 rounded-lg bg-[#5E8B7E] flex items-center justify-center text-white transition-transform duration-200 group-hover:scale-105">
+              <Leaf size={16} weight="fill" />
             </div>
-            <span className="font-bold text-stone-800">Heal</span>
+            <span className="font-semibold text-stone-900">Heal</span>
           </div>
-          <div className="flex gap-8 text-sm text-stone-500 font-medium">
-            {['About Us', 'Terms', 'Privacy', 'Twitter'].map(link => (
+          <div className="flex gap-6 md:gap-8 text-sm text-stone-600 font-medium">
+            {['About', 'Terms', 'Privacy', 'Twitter'].map(link => (
               <a 
                 key={link} 
                 href="#" 
-                className="hover:text-stone-900 transition-all duration-300 hover:scale-105"
+                className="hover:text-stone-900 transition-colors duration-200"
               >
                 {link}
               </a>
             ))}
           </div>
-          <p className="text-xs text-stone-400">© 2025 Heal Inc.</p>
+          <p className="text-xs text-stone-500">© 2025 Heal Inc.</p>
         </div>
       </footer>
     </div>
@@ -559,7 +530,7 @@ export default function LandingPage() {
   }, []);
   
   return (
-    <div className="min-h-screen selection:bg-[#5E8B7E] selection:text-white">
+    <div className="min-h-screen selection:bg-[#5E8B7E] selection:text-white" data-theme="light" style={{ backgroundColor: '#FAFAF9' }}>
       <CustomStyles />
       <div className="bg-grid-pattern fixed inset-0 z-[-1] opacity-60 pointer-events-none" />
       <Navbar onLogin={() => navigate('/login')} onSignup={() => navigate('/signup')} />

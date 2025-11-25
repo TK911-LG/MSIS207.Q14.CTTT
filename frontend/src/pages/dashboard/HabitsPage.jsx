@@ -16,6 +16,7 @@ import {
 } from 'phosphor-react';
 import { habitAPI } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useTheme } from '../../context/ThemeContext';
 import { humanTouchContent, getActionRecommendation } from '../../utils/personalization';
 
 // Curated icon set - arranged in 3 rows of 10 icons each
@@ -97,11 +98,11 @@ const getIconColor = (iconName) => {
     gift: { bg: 'bg-pink-50', text: 'text-pink-500', border: 'border-pink-200' },
     handshake: { bg: 'bg-emerald-50', text: 'text-emerald-500', border: 'border-emerald-200' },
   };
-  return colorMap[iconName] || { bg: 'bg-stone-50', text: 'text-stone-500', border: 'border-stone-200' };
+  return colorMap[iconName] || { bg: 'bg-tertiary', text: 'text-secondary', border: 'border-primary' };
 };
 
 // Stats Cards Component
-const StatsCards = ({ habits }) => {
+const StatsCards = ({ habits, getCardStyle, isGlass }) => {
   const totalHabits = habits.length;
   const completedToday = habits.filter(h => h.completed).length;
   const completionRate = totalHabits > 0 ? Math.round((completedToday / totalHabits) * 100) : 0;
@@ -114,15 +115,15 @@ const StatsCards = ({ habits }) => {
       label: 'Total Habits',
       value: totalHabits,
       icon: Target,
-      color: 'from-[#5E8B7E] to-[#4a7a6d]',
-      bgColor: 'bg-[#E7F3F0]',
+      color: 'from-accent-sage to-accent-sage/80',
+      bgColor: 'bg-accent-sage-light',
     },
     {
       label: 'Today\'s Progress',
       value: `${completionRate}%`,
       icon: ChartLine,
-      color: 'from-[#D97757] to-[#c26647]',
-      bgColor: 'bg-[#FEEBE5]',
+      color: 'from-accent-clay to-accent-clay/80',
+      bgColor: 'bg-accent-clay-light',
       subtext: `${completedToday} of ${totalHabits} completed`,
     },
     {
@@ -130,7 +131,7 @@ const StatsCards = ({ habits }) => {
       value: longestStreak,
       icon: Trophy,
       color: 'from-[#F59E0B] to-[#d97706]',
-      bgColor: 'bg-[#FEF3C7]',
+      bgColor: 'bg-yellow-50 dark:bg-yellow-950/20',
       subtext: longestStreak === 1 ? '1 day' : `${longestStreak} days`,
     },
   ];
@@ -144,23 +145,31 @@ const StatsCards = ({ habits }) => {
         return (
           <div
             key={index}
-            className="bg-white rounded-2xl p-6 card-shadow relative overflow-hidden group hover:shadow-lg transition-all duration-300"
+            className="rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all duration-300"
+            style={getCardStyle()}
           >
             <div className="relative z-10">
               <div className="flex items-start justify-between mb-4">
-                <div className={`${stat.bgColor} p-3 rounded-xl`}>
-                  <IconComponent size={24} className="text-stone-700" />
+                <div 
+                  className={`p-3 rounded-xl ${
+                    isGlass 
+                      ? 'bg-transparent border-2 border-accent-sage/20' 
+                      : stat.bgColor
+                  }`}
+                  style={isGlass ? { backgroundColor: 'transparent' } : {}}
+                >
+                  <IconComponent size={24} className="text-primary" />
                 </div>
               </div>
               <div className="mt-2">
-                <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">
+                <p className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1">
                   {stat.label}
                 </p>
-                <p className="text-3xl font-bold text-stone-900 mb-1">
+                <p className="text-3xl font-bold text-primary mb-1">
                   {stat.value}
                 </p>
                 {stat.subtext && (
-                  <p className="text-xs text-stone-400 mt-1">
+                  <p className="text-xs text-secondary mt-1">
                     {stat.subtext}
                   </p>
                 )}
@@ -175,22 +184,28 @@ const StatsCards = ({ habits }) => {
 };
 
 // Empty State Component with human touch
-const EmptyState = ({ onAdd }) => {
+const EmptyState = ({ onAdd, getCardStyle, isGlass }) => {
   const content = humanTouchContent.emptyStates.habits;
   return (
-    <div className="bg-white rounded-3xl p-8 md:p-16 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#5E8B7E]/5 to-transparent" />
+    <div className="rounded-3xl p-8 md:p-16 relative overflow-hidden" style={getCardStyle()}>
+      {!isGlass && <div className="absolute inset-0 bg-gradient-to-br from-accent-sage/5 to-transparent" />}
       <div className="relative z-10 text-center">
-        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#E7F3F0] to-[#5E8B7E]/10 flex items-center justify-center animate-pulse">
-          <Sparkle size={48} className="text-[#5E8B7E]" weight="duotone" />
+        <div 
+          className={`w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center animate-pulse ${
+            isGlass 
+              ? 'bg-transparent' 
+              : 'bg-gradient-to-br from-accent-sage-light to-accent-sage/10'
+          }`}
+        >
+          <Sparkle size={48} className="text-accent-sage" weight="duotone" />
         </div>
-        <h3 className="text-2xl font-bold text-stone-900 mb-3">
+        <h3 className="text-2xl font-bold text-primary mb-3">
           {content.title}
         </h3>
-        <p className="text-stone-500 mb-8 max-w-md mx-auto text-lg leading-relaxed">
+        <p className="text-secondary mb-8 max-w-md mx-auto text-lg leading-relaxed">
           {content.message}
         </p>
-        <p className="text-sm text-stone-400 mb-6 italic">
+        <p className="text-sm text-secondary mb-6 italic">
           {getActionRecommendation('noHabits')}
         </p>
       </div>
@@ -199,17 +214,20 @@ const EmptyState = ({ onAdd }) => {
 };
 
 // Habit Card Component
-const HabitCard = ({ habit, onToggle, onDelete }) => {
+const HabitCard = ({ habit, onToggle, onDelete, isGlass }) => {
   const IconComponent = habitIcons[habit.iconName] || Target;
   const iconColors = getIconColor(habit.iconName);
 
   return (
     <div
-      className={`group relative bg-white rounded-2xl p-5 border-2 transition-all duration-300 hover:shadow-lg ${
+      className={`group relative rounded-2xl p-5 border-2 transition-all duration-300 hover:shadow-lg ${
         habit.completed
-          ? 'border-[#5E8B7E]/30 bg-[#E7F3F0]/30'
-          : `border-stone-100 ${iconColors.border}`
+          ? isGlass 
+            ? 'border-accent-sage/20 bg-transparent' 
+            : 'border-accent-sage/30 bg-accent-sage-light/30'
+          : `border-primary ${iconColors.border}`
       }`}
+      style={isGlass ? { backgroundColor: 'transparent' } : {}}
     >
       <div className="flex items-start gap-4">
         {/* Icon & Check Button */}
@@ -217,9 +235,14 @@ const HabitCard = ({ habit, onToggle, onDelete }) => {
           onClick={() => onToggle(habit.id)}
           className={`shrink-0 w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
             habit.completed
-              ? 'bg-[#5E8B7E] text-white scale-100 shadow-md'
-              : `${iconColors.bg} ${iconColors.text} hover:scale-110 group-hover:shadow-md`
+              ? isGlass
+                ? 'bg-accent-sage/30 text-accent-sage scale-100 shadow-md backdrop-blur-sm'
+                : 'bg-accent-sage text-inverse scale-100 shadow-md'
+              : isGlass
+                ? `${iconColors.text} hover:scale-110 group-hover:shadow-md backdrop-blur-sm bg-transparent border-2 ${iconColors.border}`
+                : `${iconColors.bg} ${iconColors.text} hover:scale-110 group-hover:shadow-md`
           }`}
+          style={isGlass && !habit.completed ? { backgroundColor: 'transparent' } : {}}
         >
           {habit.completed ? (
             <Check size={24} weight="bold" />
@@ -235,15 +258,19 @@ const HabitCard = ({ habit, onToggle, onDelete }) => {
               <h3
                 className={`font-bold text-base transition-colors ${
                   habit.completed
-                    ? 'text-stone-400 line-through'
-                    : 'text-stone-900'
+                    ? 'text-secondary line-through'
+                    : 'text-primary'
                 }`}
               >
                 {habit.title}
               </h3>
               <div className="flex items-center gap-3 mt-1.5">
                 {habit.streak > 0 && (
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[#D97757] bg-[#FEEBE5] px-2.5 py-1 rounded-full">
+                  <span 
+                    className={`inline-flex items-center gap-1 text-xs font-bold text-accent-clay px-2.5 py-1 rounded-full ${
+                      isGlass ? 'bg-transparent border border-accent-clay/30' : 'bg-accent-clay-light'
+                    }`}
+                  >
                     <Flame size={12} weight="fill" />
                     {habit.streak} {habit.streak === 1 ? 'day' : 'days'}
                   </span>
@@ -255,7 +282,12 @@ const HabitCard = ({ habit, onToggle, onDelete }) => {
                 e.stopPropagation();
                 onDelete(habit.id, habit.title);
               }}
-              className="opacity-0 group-hover:opacity-100 p-2 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-all shrink-0"
+              className={`opacity-0 group-hover:opacity-100 p-2 rounded-lg text-secondary hover:text-red-600 transition-all shrink-0 ${
+                isGlass 
+                  ? 'hover:bg-transparent hover:border hover:border-red-500/30' 
+                  : 'hover:bg-red-50 dark:hover:bg-red-950/20'
+              }`}
+              style={isGlass ? { backgroundColor: 'transparent' } : {}}
               aria-label="Delete habit"
             >
               <Trash size={18} />
@@ -268,6 +300,7 @@ const HabitCard = ({ habit, onToggle, onDelete }) => {
 };
 
 const HabitsPage = () => {
+  const { getCardStyle, isGlass } = useTheme();
   const [habits, setHabits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -294,7 +327,6 @@ const HabitsPage = () => {
           const today = new Date().toDateString();
           const isCompleted = habit.completedDates?.includes(today) || false;
           
-          // Calculate streak
           const sortedDates = habit.completedDates?.sort() || [];
           let streak = 0;
           const todayDate = new Date();
@@ -330,19 +362,34 @@ const HabitsPage = () => {
             iconName = categoryToIcon[habit.category?.toLowerCase()] || 'heart';
           }
           
-          // Fallback: if iconName doesn't exist in habitIcons, use 'heart'
           if (!habitIcons[iconName]) {
             iconName = 'heart';
           }
 
-          // Ensure name is always a string
           let habitName = habit.name;
-          if (typeof habitName !== 'string') {
+          if (!habitName || typeof habitName !== 'string') {
             if (habitName && typeof habitName === 'object') {
-              habitName = habitName.name || habitName.title || String(habitName);
+              if (habitName.name) {
+                habitName = habitName.name;
+              } else if (habitName.title) {
+                habitName = habitName.title;
+              } else if (habitName instanceof HTMLElement || habitName.constructor?.name === 'FiberNode') {
+                habitName = 'Untitled Habit';
+              } else {
+                try {
+                  habitName = JSON.stringify(habitName);
+                } catch (e) {
+                  habitName = 'Untitled Habit';
+                }
+              }
             } else {
               habitName = String(habitName || 'Untitled Habit');
             }
+          }
+          
+          // Final safety check - ensure it's a valid string
+          if (typeof habitName !== 'string' || habitName.trim() === '') {
+            habitName = 'Untitled Habit';
           }
 
           return {
@@ -386,12 +433,31 @@ const HabitsPage = () => {
   };
 
   const addHabit = async (habitName = null, iconName = null, category = null) => {
-    // Ensure we get a string value, not an object
     let nameValue = habitName;
     if (habitName && typeof habitName === 'object') {
-      nameValue = habitName.name || habitName.title || String(habitName);
+      if (habitName.name) {
+        nameValue = habitName.name;
+      } else if (habitName.title) {
+        nameValue = habitName.title;
+      } else if (habitName instanceof HTMLElement || habitName.constructor?.name === 'FiberNode') {
+        nameValue = null;
+      } else {
+        try {
+          nameValue = JSON.stringify(habitName);
+        } catch (e) {
+          nameValue = null;
+        }
+      }
     }
     const finalName = String(nameValue || newHabitName || '').trim();
+    
+    // Final validation - ensure it's a valid string
+    if (!finalName || finalName === '' || finalName === 'null' || finalName === 'undefined') {
+      toast.warning('Please enter a valid habit name', {
+        title: 'Invalid Input',
+      });
+      return;
+    }
     const finalIcon = String(iconName || selectedIcon || 'heart');
     const finalCategory = category ? String(category) : null;
     
@@ -501,8 +567,8 @@ const HabitsPage = () => {
     return (
       <div className="max-w-6xl mx-auto fade-in flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <Spinner size={40} className="animate-spin text-[#5E8B7E] mx-auto mb-4" />
-          <p className="text-stone-500">Loading your habits...</p>
+          <Spinner size={40} className="animate-spin text-accent-sage mx-auto mb-4" />
+          <p className="text-secondary">Loading your habits...</p>
         </div>
       </div>
     );
@@ -511,7 +577,14 @@ const HabitsPage = () => {
   if (error) {
     return (
       <div className="max-w-6xl mx-auto fade-in">
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-red-700">
+        <div 
+          className={`border rounded-2xl p-6 text-red-700 ${
+            isGlass 
+              ? 'bg-transparent border-red-500/30' 
+              : 'bg-red-50 border-red-200'
+          }`}
+          style={isGlass ? { backgroundColor: 'transparent' } : {}}
+        >
           {error}
         </div>
       </div>
@@ -521,11 +594,17 @@ const HabitsPage = () => {
   return (
     <div className="max-w-6xl mx-auto fade-in">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-stone-200 -mx-4 px-4 py-4 mb-8">
+      <div 
+        className="sticky top-0 z-40 border-b -mx-4 px-4 py-4 mb-8 rounded-3xl"
+        style={{
+          ...getCardStyle(),
+          borderBottom: '1px solid var(--border-primary)',
+        }}
+      >
         <header className="flex justify-between items-center">
           <div>
-            <h1 className="text-4xl font-bold text-stone-900 mb-2">Habits</h1>
-            <p className="text-stone-500 text-lg">Build your daily rituals and track your progress.</p>
+            <h1 className="text-4xl font-bold text-primary mb-2">Habits</h1>
+            <p className="text-secondary text-lg">Build your daily rituals and track your progress.</p>
           </div>
           {!isCreating && (
             <button
@@ -534,7 +613,7 @@ const HabitsPage = () => {
                 // Scroll to top smoothly
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="flex items-center gap-2 px-5 py-3 bg-[#1C1917] text-white rounded-xl font-semibold hover:bg-stone-800 transition-all shadow-lg hover:shadow-xl"
+              className="flex items-center gap-2 px-5 py-3 bg-primary text-inverse rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
             >
               <Plus size={20} weight="bold" />
               Add Habit
@@ -545,16 +624,16 @@ const HabitsPage = () => {
 
       {/* Create Habit Form - Inline */}
       {isCreating && (
-        <div className="bg-white rounded-3xl p-8 card-shadow mb-8 fade-in-up sticky top-24 z-30">
+        <div className="rounded-3xl p-8 mb-8 fade-in-up sticky top-24 z-30" style={getCardStyle()}>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-stone-900">New Habit</h2>
+            <h2 className="text-xl font-bold text-primary">New Habit</h2>
             <button
               onClick={() => {
                 setIsCreating(false);
                 setNewHabitName('');
                 setSelectedIcon('heart');
               }}
-              className="p-2 rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-600 transition-colors"
+              className="p-2 rounded-full hover:bg-tertiary text-secondary hover:text-primary transition-colors"
             >
               <X size={20} weight="bold" />
             </button>
@@ -563,7 +642,7 @@ const HabitsPage = () => {
           <div className="space-y-6">
             {/* Custom Habit Input */}
             <div>
-              <label className="block text-sm font-semibold text-stone-700 mb-2">
+              <label className="block text-sm font-semibold text-primary mb-2">
                 Habit Name
               </label>
               <input
@@ -581,14 +660,14 @@ const HabitsPage = () => {
                   }
                 }}
                 placeholder="e.g., Morning Meditation"
-                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#5E8B7E]/20 focus:border-[#5E8B7E] transition-all"
+                className="w-full px-4 py-3 bg-tertiary border border-primary rounded-xl text-primary placeholder-secondary focus:outline-none focus:ring-2 focus:ring-accent-sage/20 focus:border-accent-sage transition-all"
                 autoFocus
               />
             </div>
 
             {/* Icon Selection */}
             <div>
-              <label className="block text-sm font-semibold text-stone-700 mb-3">
+              <label className="block text-sm font-semibold text-primary mb-3">
                 Choose Icon
               </label>
               <div className="grid grid-cols-10 gap-2">
@@ -601,15 +680,15 @@ const HabitsPage = () => {
                       className={`
                         aspect-square p-2.5 rounded-xl border-2 transition-all duration-200
                         ${selectedIcon === key
-                          ? 'border-[#5E8B7E] bg-[#E7F3F0] text-[#5E8B7E] scale-105 shadow-md ring-2 ring-[#5E8B7E]/20'
-                          : `${iconColors.border} ${iconColors.bg} ${iconColors.text} hover:scale-105 hover:shadow-sm`
+                          ? `border-accent-sage bg-accent-sage-light text-accent-sage scale-105 shadow-md ring-2 ring-accent-sage/20`
+                          : `border-primary/20 bg-tertiary text-secondary hover:border-primary/40 hover:bg-tertiary/80 hover:scale-105 hover:shadow-sm`
                         }
                       `}
                       aria-label={`Select ${key} icon`}
                     >
                       <IconComponent 
                         size={18} 
-                        weight="fill" 
+                        weight={selectedIcon === key ? "fill" : "regular"}
                         className="mx-auto"
                       />
                     </button>
@@ -621,9 +700,9 @@ const HabitsPage = () => {
             {/* Action Buttons */}
             <div className="flex gap-3 pt-2">
               <button
-                onClick={addHabit}
+                onClick={() => addHabit()}
                 disabled={isAdding || !newHabitName.trim()}
-                className="flex-1 px-4 py-3 rounded-xl font-semibold text-white bg-[#1C1917] hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-3 rounded-xl font-semibold text-inverse bg-primary hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isAdding ? (
                   <>
@@ -643,7 +722,12 @@ const HabitsPage = () => {
                   setNewHabitName('');
                   setSelectedIcon('heart');
                 }}
-                className="px-6 py-3 rounded-xl font-semibold text-stone-600 bg-stone-100 hover:bg-stone-200 transition-colors"
+                className={`px-6 py-3 rounded-xl font-semibold text-secondary transition-colors ${
+                  isGlass 
+                    ? 'bg-transparent border border-primary/30 hover:border-primary/50' 
+                    : 'bg-tertiary hover:bg-tertiary/80'
+                }`}
+                style={isGlass ? { backgroundColor: 'transparent' } : {}}
               >
                 Cancel
               </button>
@@ -653,15 +737,15 @@ const HabitsPage = () => {
       )}
 
       {/* Stats Cards - Hide when creating */}
-      {!isCreating && <StatsCards habits={habits} />}
+      {!isCreating && <StatsCards habits={habits} getCardStyle={getCardStyle} isGlass={isGlass} />}
 
       {/* Quick Add Suggested Habits - Show when user has few or no habits, but hide when creating */}
       {habits.length < 3 && !isCreating && (
-        <div className="bg-white rounded-3xl p-6 card-shadow mb-8">
+        <div className="rounded-3xl p-6 mb-8" style={getCardStyle()}>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-lg font-bold text-stone-900">Get Started with Healthy Habits</h3>
-              <p className="text-sm text-stone-500 mt-1">Click to add instantly</p>
+              <h3 className="text-lg font-bold text-primary">Get Started with Healthy Habits</h3>
+              <p className="text-sm text-secondary mt-1">Click to add instantly</p>
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -682,15 +766,26 @@ const HabitsPage = () => {
                   className={`
                     relative flex flex-col items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all
                     ${exists 
-                      ? 'border-stone-200 bg-stone-50 text-stone-400 cursor-not-allowed'
-                      : `${iconColors.border} ${iconColors.bg} ${iconColors.text} hover:scale-105 hover:shadow-md active:scale-95`
+                      ? isGlass
+                        ? 'border-primary/30 bg-transparent text-tertiary cursor-not-allowed'
+                        : 'border-primary bg-tertiary text-tertiary cursor-not-allowed'
+                      : isGlass
+                        ? `${iconColors.border} bg-transparent ${iconColors.text} hover:scale-105 hover:shadow-md active:scale-95 backdrop-blur-sm`
+                        : `${iconColors.border} ${iconColors.bg} ${iconColors.text} hover:scale-105 hover:shadow-md active:scale-95`
                     }
                     disabled:opacity-50 disabled:cursor-not-allowed
                   `}
+                  style={isGlass ? { backgroundColor: 'transparent' } : {}}
                 >
                   {exists && (
-                    <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#5E8B7E] flex items-center justify-center">
-                      <Check size={12} weight="bold" className="text-white" />
+                    <div 
+                      className={`absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center ${
+                        isGlass 
+                          ? 'bg-accent-sage/30 border border-accent-sage/50' 
+                          : 'bg-accent-sage'
+                      }`}
+                    >
+                      <Check size={12} weight="bold" className={isGlass ? 'text-accent-sage' : 'text-white'} />
                     </div>
                   )}
                   <IconComponent size={24} weight="fill" />
@@ -706,20 +801,25 @@ const HabitsPage = () => {
 
       {/* Habits List or Empty State */}
       {habits.length === 0 ? (
-        <EmptyState onAdd={() => setIsCreating(true)} />
+        <EmptyState onAdd={() => setIsCreating(true)} getCardStyle={getCardStyle} isGlass={isGlass} />
       ) : (
-        <div className="bg-white rounded-3xl p-8 card-shadow relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#5E8B7E]/5 to-transparent rounded-full blur-3xl -mr-32 -mt-32" />
+        <div className="rounded-3xl p-8 relative overflow-hidden" style={getCardStyle()}>
+          {!isGlass && <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-accent-sage/5 to-transparent rounded-full blur-3xl -mr-32 -mt-32" />}
           
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-2xl font-bold text-stone-900">Daily Rituals</h3>
-                <p className="text-sm text-stone-500 mt-1">Your habits for today</p>
+                <h3 className="text-2xl font-bold text-primary">Daily Rituals</h3>
+                <p className="text-sm text-secondary mt-1">Your habits for today</p>
               </div>
               <button
                 onClick={() => setIsCreating(true)}
-                className="w-10 h-10 rounded-full bg-[#E7F3F0] flex items-center justify-center text-[#5E8B7E] hover:bg-[#5E8B7E] hover:text-white transition-all shadow-sm"
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm ${
+                  isGlass
+                    ? 'bg-transparent border-2 border-accent-sage/30 text-accent-sage hover:border-accent-sage/50 hover:bg-accent-sage/10'
+                    : 'bg-accent-sage-light text-accent-sage hover:bg-accent-sage hover:text-inverse'
+                }`}
+                style={isGlass ? { backgroundColor: 'transparent' } : {}}
               >
                 <Plus size={20} weight="bold" />
               </button>
@@ -732,6 +832,7 @@ const HabitsPage = () => {
                   habit={habit}
                   onToggle={toggleHabit}
                   onDelete={handleDeleteClick}
+                  isGlass={isGlass}
                 />
               ))}
             </div>
@@ -756,21 +857,29 @@ const HabitsPage = () => {
             }}
           />
           <div
-            className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 z-10"
+            className="relative rounded-2xl shadow-2xl w-full max-w-md p-6 z-10"
             onClick={(e) => e.stopPropagation()}
             style={{
+              ...getCardStyle(),
               animation: 'slideInFromTop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
             }}
           >
             <div className="mb-6">
-              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mb-4 mx-auto">
-                <Trash size={24} className="text-red-600" />
+              <div 
+                className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto ${
+                  isGlass 
+                    ? 'bg-transparent border-2 border-red-500/30' 
+                    : 'bg-red-50 dark:bg-red-950/20'
+                }`}
+                style={isGlass ? { backgroundColor: 'transparent' } : {}}
+              >
+                <Trash size={24} className="text-red-600 dark:text-red-400" />
               </div>
-              <h2 className="text-xl font-bold text-stone-900 text-center mb-2">
+              <h2 className="text-xl font-bold text-primary text-center mb-2">
                 Delete Habit?
               </h2>
-              <p className="text-sm text-stone-600 text-center">
-                Are you sure you want to delete <span className="font-semibold text-stone-900">"{deleteTarget.name}"</span>? This action cannot be undone.
+              <p className="text-sm text-secondary text-center">
+                Are you sure you want to delete <span className="font-semibold text-primary">"{deleteTarget.name}"</span>? This action cannot be undone.
               </p>
             </div>
             
@@ -781,7 +890,12 @@ const HabitsPage = () => {
                   setDeleteTarget(null);
                 }}
                 disabled={isDeleting}
-                className="flex-1 px-4 py-2.5 rounded-xl font-semibold text-stone-600 bg-stone-100 hover:bg-stone-200 transition-colors disabled:opacity-50"
+                className={`flex-1 px-4 py-2.5 rounded-xl font-semibold text-secondary transition-colors disabled:opacity-50 ${
+                  isGlass 
+                    ? 'bg-transparent border border-primary/30 hover:border-primary/50' 
+                    : 'bg-tertiary hover:bg-tertiary/80'
+                }`}
+                style={isGlass ? { backgroundColor: 'transparent' } : {}}
               >
                 Cancel
               </button>

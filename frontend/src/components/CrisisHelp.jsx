@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, Plus, X, Pencil, Trash } from 'phosphor-react';
 import { useToast } from '../context/ToastContext';
+import { useTheme } from '../context/ThemeContext';
 
 const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,6 +10,7 @@ const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({ name: '', phone: '' });
   const toast = useToast();
+  const { getCardStyle } = useTheme();
 
   // Default emergency numbers
   const defaultNumbers = [
@@ -127,7 +129,8 @@ const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
           onClick={handleClose}
         >
           <div
-            className="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
+            className="rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col border border-primary"
+            style={getCardStyle()}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -152,12 +155,13 @@ const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
               {allNumbers.map((number) => (
                 <div
                   key={number.id}
-                  className="heal-card p-4 bg-white border border-stone-200 hover:border-red-300 hover:shadow-md transition-all"
+                  className="heal-card p-4 border border-primary hover:border-red-300 hover:shadow-md transition-all rounded-xl"
+                  style={getCardStyle()}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <h3 className="font-bold text-stone-900 mb-1">{number.name}</h3>
-                      <p className="text-2xl font-bold text-red-600">{number.phone}</p>
+                      <h3 className="font-bold text-primary mb-1">{number.name}</h3>
+                      <p className="text-2xl font-bold text-red-600 dark:text-red-400">{number.phone}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
@@ -171,14 +175,14 @@ const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
                         <>
                           <button
                             onClick={() => handleEdit(number.id)}
-                            className="w-10 h-10 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center transition-colors"
+                            className="w-10 h-10 rounded-full bg-tertiary hover:bg-elevated text-secondary hover:text-primary flex items-center justify-center transition-colors"
                             aria-label="Edit"
                           >
                             <Pencil size={16} />
                           </button>
                           <button
                             onClick={() => handleDelete(number.id)}
-                            className="w-10 h-10 rounded-full bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-colors"
+                            className="w-10 h-10 rounded-full bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400 flex items-center justify-center transition-colors"
                             aria-label="Delete"
                           >
                             <Trash size={16} />
@@ -197,7 +201,8 @@ const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
                   setEditingId(null);
                   setShowAddModal(true);
                 }}
-                className="w-full heal-card p-4 border-2 border-dashed border-stone-300 hover:border-[#5E8B7E] hover:bg-stone-50 transition-all flex items-center justify-center gap-2 text-stone-600 hover:text-[#5E8B7E]"
+                className="w-full heal-card p-4 border-2 border-dashed border-primary hover:border-[#5E8B7E] transition-all flex items-center justify-center gap-2 text-secondary hover:text-[#5E8B7E] rounded-xl"
+                style={getCardStyle()}
               >
                 <Plus size={20} />
                 <span className="font-semibold">Add Custom Number</span>
@@ -205,12 +210,15 @@ const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
             </div>
 
             {/* Footer with trust signals */}
-            <div className="p-6 border-t border-stone-200 bg-gradient-to-br from-stone-50 to-stone-100">
+            <div 
+              className="p-6 border-t border-primary"
+              style={getCardStyle()}
+            >
               <div className="space-y-3">
-                <p className="text-sm text-stone-700 text-center font-medium leading-relaxed">
+                <p className="text-sm text-primary text-center font-medium leading-relaxed">
                   💙 You're not alone. These numbers are here 24/7, and someone is always ready to listen and help.
                 </p>
-                <div className="flex items-center justify-center gap-4 text-xs text-stone-500">
+                <div className="flex items-center justify-center gap-4 text-xs text-secondary">
                   <div className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-green-500"></span>
                     <span>Available 24/7</span>
@@ -224,7 +232,7 @@ const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
                     <span>Free Support</span>
                   </div>
                 </div>
-                <p className="text-xs text-stone-400 text-center italic mt-2">
+                <p className="text-xs text-secondary text-center italic mt-2">
                   Your privacy is protected. We don't track or store any information about your calls.
                 </p>
               </div>
@@ -244,16 +252,17 @@ const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
           }}
         >
           <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+            className="rounded-2xl shadow-2xl w-full max-w-md p-6 border border-primary"
+            style={getCardStyle()}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-xl font-bold text-stone-900 mb-6">
+            <h3 className="text-xl font-bold text-primary mb-6">
               {editingId ? 'Edit Phone Number' : 'Add New Phone Number'}
             </h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-2">
+                <label className="block text-sm font-semibold text-primary mb-2">
                   Name
                 </label>
                 <input
@@ -261,13 +270,13 @@ const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g., Therapist, Counseling Hotline..."
-                  className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#5E8B7E]/20 focus:border-[#5E8B7E] transition-all"
+                  className="w-full px-4 py-3 bg-tertiary border border-primary rounded-xl text-primary placeholder-secondary focus:outline-none focus:ring-2 focus:ring-[#5E8B7E]/20 focus:border-[#5E8B7E] transition-all"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-2">
+                <label className="block text-sm font-semibold text-primary mb-2">
                   Phone Number
                 </label>
                 <input
@@ -275,7 +284,7 @@ const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="e.g., 1900xxxx, 0912xxxxxx..."
-                  className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#5E8B7E]/20 focus:border-[#5E8B7E] transition-all"
+                  className="w-full px-4 py-3 bg-tertiary border border-primary rounded-xl text-primary placeholder-secondary focus:outline-none focus:ring-2 focus:ring-[#5E8B7E]/20 focus:border-[#5E8B7E] transition-all"
                 />
               </div>
 
@@ -286,7 +295,7 @@ const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
                     setEditingId(null);
                     setFormData({ name: '', phone: '' });
                   }}
-                  className="flex-1 px-4 py-3 rounded-xl font-semibold text-stone-600 bg-stone-100 hover:bg-stone-200 transition-colors"
+                  className="flex-1 px-4 py-3 rounded-xl font-semibold text-secondary bg-tertiary hover:bg-elevated transition-colors"
                 >
                   Cancel
                 </button>
@@ -305,9 +314,7 @@ const CrisisHelp = ({ isOpen: externalIsOpen, onClose }) => {
   );
 };
 
-// Export function to open modal (for sidebar button)
 export const openCrisisHelp = () => {
-  // This will be handled by the component itself
 };
 
 export default CrisisHelp;
